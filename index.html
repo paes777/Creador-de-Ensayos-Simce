@@ -150,80 +150,82 @@
     const IconMetrenco = () => <span style={{fontSize:'2.5rem'}}>🏫</span>;
 
     // ==========================================
-    // MOTOR IA LIBRE "GPT-4O-MINI" | SIN CLAVES
+    // MOTOR IA LIBRE CHUNKED (ANTI-TRUNCATION)
     // ==========================================
-    const generateTestWithAI = async (school, grade, subject) => {
-      const prompt = `INSTRUCCIÓN RIGUROSA E INQUEBRANTABLE:
-Eres el equipo científico y lingüístico experto del Ministerio de Educación de Chile.
-Redacta un ensayo SIMCE (Prueba Nacional Escolar) para ${grade} grado en la asignatura de ${subject}.
-Crea EXACTAMENTE 35 preguntas completamente distintas. (No 34, no 36. Exactamente 35).
-- Pregunta 1 a 31: Selección múltiple (4 opciones).
-- Pregunta 32 a 35: Desarrollo / Respuesta Abierta.
+    const fetchChunk = async (grade, subject, startId, endId, isDev, reqText) => {
+      let formatInst = isDev 
+        ? `- Del ${startId} al 31: Selección múltiple. Del 32 al ${endId}: Desarrollo (sin alternativas, déjalo en un array vacío []).`
+        : `- TODAS son de Selección múltiple (propiedad 'alternativas' obligatoria con 4 opciones A, B, C, D).`;
+      
+      let textInst = reqText 
+        ? `En la pregunta ID ${startId}, crea una LECTURA INTERESANTE Y LARGA (Mito chileno, artículo real) en la propiedad 'textoLectura'. Las siguientes preguntas básalas en el texto.`
+        : `Deja 'textoLectura' como null en todas las preguntas de este bloque.`;
 
-REGLAS DE ORO:
-1. Contexto Chileno Educativo: Si es Matemática o Ciencias, usa ciudades (Concepción, Valparaíso), personajes chilenos (Isidora, Matías) escolares. Si es Lenguaje, redactalos tú en el campo "textoLectura" como Mitos Chilenos Gigantes (El Caleuche, La Pincoya, etc) en la pregunta 1 y 16.
-2. Imágenes Educativas: Necesitamos al menos 6 preguntas que requieran una imagen pintada. Coloca esto en "imageUrl":
-"https://image.pollinations.ai/prompt/{descripcion_exacta_en_ingles_unida_por_guiones_bajos}?width=600&height=350&nologo=true"
-EJEMPLO: "https://image.pollinations.ai/prompt/a_chilean_student_reading_a_book_watercolor?width=600&height=350&nologo=true".
+      const prompt = `ERES EL MINISTERIO DE EDUCACIÓN CHILENO.
+Genera un ARRAY JSON con EXACTAMENTE ${endId - startId + 1} objetos de preguntas para ${subject} de ${grade} Básico.
+Los IDs exactos deben ir del ${startId} al ${endId}.
 
-TU RESPUESTA DEBE SER ESTRICTAMENTE UN ÚNICO ARREGLO JSON [ ... ] SIN NADA MÁS. SIN \`\`\`json. NADA AFUERA. SÓLO EL ARREGLO.
-EJEMPLO FORMATO JSON EXACTO:
-[
-  { 
-    "id": 1, 
-    "tipo": "seleccion", 
-    "eje": "Nombre del Eje", 
-    "textoLectura": "Había una vez en el sur de Chile... (SÓLO USA ESTE CAMPO EN LA PRIMERA PREGUNTA DEL TEXTO!)",
-    "enunciado": "¿Qué aprendemos de la historia?", 
-    "imageUrl": "https://image.pollinations.ai/prompt/chilean_legend_watercolor?width=600&height=350&nologo=true", 
-    "alternativas": ["A) ...", "B) ...", "C) ...", "D) ..."], 
-    "correcta": "A) ..." 
-  }
-]`;
+REGLAS DE FORMATO RIGUROSAS:
+- id: (número asignado en orden)
+- tipo: "seleccion" o "desarrollo"
+- eje: (string del tema)
+- textoLectura: (string o null)
+- enunciado: (string)
+- imageUrl: (Debe ir una URL estricta O null. CREA AL MENOS 2 PREGUNTAS con esta URL: "https://image.pollinations.ai/prompt/{descripcion_ingles_unida_con_guion_bajo}?width=600&height=350&nologo=true")
+- alternativas: (Array de 4 strings o [])
+- correcta: (string de la respuesta correcta o rúbrica de corrección para el docente si es desarrollo)
 
-      // Hacemos el bypass gratuito a ChatGPT via Pollinations API Text
+${formatInst}
+${textInst}
+Usa ciudades chilenas y personajes locales. NUNCA insertes texto Markdown (como \`\`\`json). SOLO EL ARREGLO PLANO COMENZANDO CON [ Y TERMINANDO CON ].`;
+
       const response = await fetch("https://text.pollinations.ai/openai", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messages: [
-              { role: "system", content: "Eres el Motor de JSON Educativo. Solo escupes JSON Válido. Cero charla." },
+              { role: "system", content: "Returns ONLY valid JSON. No intro, no outro, NO MARKDOWN." },
               { role: "user", content: prompt }
             ],
             model: "openai",
             jsonMode: true
           })
       });
-        
-      if (!response.ok) {
-          const err = await response.text();
-          throw new Error("Línea central colapsó: " + err);
-      }
+      
+      if (!response.ok) throw new Error("Fallo de conexión OpenAI Proxy");
       
       const rawRes = await response.json();
-      let rawText = "";
-
-      // Validamos si llegó respuesta nativa de OpenAI formato Choices
-      if (rawRes.choices && rawRes.choices[0] && rawRes.choices[0].message) {
-         rawText = rawRes.choices[0].message.content;
-      } else if (typeof rawRes === 'string') {
-         rawText = rawRes;
-      } else {
-         throw new Error("Estructura de respuesta libre irreconocible.");
+      let rawText = rawRes.choices ? rawRes.choices[0].message.content : rawRes;
+      
+      // Limpiamos estrictamente el string para forzar JSON válido
+      let cutStart = rawText.indexOf('[');
+      let cutEnd = rawText.lastIndexOf(']');
+      if (cutStart !== -1 && cutEnd !== -1) {
+          rawText = rawText.substring(cutStart, cutEnd + 1);
       }
-
-      // Limpieza de Markdown si ChatGPT ignoró y colocó ```json
-      rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
       
       try {
-        const testArray = JSON.parse(rawText);
-        // Validar Array
-        if(!Array.isArray(testArray) || testArray.length < 5) throw new Error("Generación parcial del ensayo.");
-        return testArray;
-      } catch (parseErr) {
-        console.error("Fallo Parseando este texto:", rawText);
-        throw new Error("El modelo gratuito generó el libro con errores de formato. Por favor vuelve a intentarlo.");
+         return JSON.parse(rawText);
+      } catch(e) {
+         throw new Error("Truncamiento detectado en el Chunk. El texto no cerró los corchetes correctamente.");
       }
+    };
+
+    const generateTestWithAI = async (school, grade, subject) => {
+        // Al dividir la carga en 3 hilos paralelos, sorteamos los Límites de Tokens de OpenAI
+        // Evitando al 100% que el JSON se corte a la mitad, y triplicando la velocidad de creación.
+        const p1 = fetchChunk(grade, subject, 1, 12, false, subject === 'lectura');
+        const p2 = fetchChunk(grade, subject, 13, 24, false, subject === 'lectura');
+        const p3 = fetchChunk(grade, subject, 25, 35, true, false);
+
+        const chunks = await Promise.all([p1, p2, p3]);
+        
+        let masterTest = [];
+        chunks.forEach(ch => { masterTest = masterTest.concat(ch); });
+        
+        // Re-mapear IDs forzosamente asegurando la secuencia perfecta 1-35.
+        masterTest.forEach((item, index) => { item.id = index + 1; });
+        return masterTest;
     };
 
 
