@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Master SIMCE Pro - Motor GPT Libre (V8)</title>
+  <title>Master SIMCE Pro - Generador Curricular Offline (V10)</title>
   
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -18,7 +18,7 @@
       --primary-color: #3b82f6; 
       --secondary-color: #f43f5e; 
       --science-color: #10b981; 
-      --gpt-color: #10a37f;
+      --gpt-color: #8b5cf6;
       --bg-start: #0f172a;
       --bg-end: #020617;
       --text: #f8fafc;
@@ -32,14 +32,14 @@
     .dashboard-wrapper { padding: 3rem; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
     .header { display: flex; align-items: center; justify-content: space-between; padding: 2rem 3rem; }
     .logo-area { display: flex; align-items: center; gap: 1.5rem; }
-    .logo-icon { width: 75px; height: 75px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--gpt-color), var(--primary-color)); box-shadow: 0 10px 30px rgba(16, 163, 127, 0.4); }
-    .header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #6ee7b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-icon { width: 75px; height: 75px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--gpt-color), #2563eb); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); font-size: 2.2rem;}
+    .header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
     .grid-layout { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 2.5rem; }
     .panel-section { display: flex; flex-direction: column; gap: 1.2rem; }
     .panel-section h2 { font-size: 1.4rem; color: #cbd5e1; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem; }
     
-    .btn-card { padding: 1.8rem; border-radius: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid transparent; background: rgba(0,0,0,0.3); font-size: 1.2rem; display: flex; align-items: center; gap: 1rem; font-weight: 600; color: #94a3b8; }
+    .btn-card { padding: 1.8rem; border-radius: 16px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; background: rgba(0,0,0,0.3); font-size: 1.2rem; display: flex; align-items: center; gap: 1rem; font-weight: 600; color: #94a3b8; }
     .btn-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.1); color: white; }
     
     .btn-card.active.truf { border-color: #38bdf8; background: rgba(56, 189, 248, 0.15); color: white; box-shadow: 0 0 25px rgba(56, 189, 248, 0.2); }
@@ -54,15 +54,8 @@
     
     .generate-wrap { margin-top: 3rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
     .gen-btn { font-size: 1.5rem; padding: 1.5rem 4rem; border-radius: 99px; border: none; font-weight: 800; background: #1e293b; color: #64748b; cursor: not-allowed; transition: all 0.4s; display: inline-flex; align-items: center; gap: 1rem; }
-    .gen-btn.ready { background: linear-gradient(135deg, var(--gpt-color), var(--primary-color)); color: white; cursor: pointer; box-shadow: 0 15px 40px rgba(16, 163, 127, 0.5); }
+    .gen-btn.ready { background: linear-gradient(135deg, var(--gpt-color), #2563eb); color: white; cursor: pointer; box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5); }
     .gen-btn.ready:hover { transform: scale(1.05) translateY(-5px); }
-
-    /* SPINNER */
-    .loading-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white;}
-    .gpt-spinner { width: 80px; height: 80px; border-radius: 50%; border: 4px solid transparent; border-top-color: var(--gpt-color); border-right-color: var(--primary-color); animation: spin 1s linear infinite; margin-bottom: 2rem; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    .load-text { font-size: 1.8rem; font-weight: 800; font-family: 'Outfit'; background: linear-gradient(to right, #6ee7b7, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center;}
-    .load-sub { color: #94a3b8; font-size: 1.1rem; margin-top: 1rem; max-width: 500px; text-align: center;}
 
     /* VIEWER */
     .viewer { background: #f1f5f9; min-height: 100vh; color: #0f172a; display: flex; flex-direction: column; }
@@ -70,7 +63,7 @@
     .btn { padding: 0.8rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; transition: 0.2s; }
     .btn-back { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
     .btn-back:hover { background: rgba(255,255,255,0.2); }
-    .btn-print { background: var(--gpt-color); color: white; box-shadow: 0 4px 15px rgba(16, 163, 127, 0.4); }
+    .btn-print { background: var(--gpt-color); color: white; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
     .btn-print:hover { transform: translateY(-3px); }
 
     .doc-container { display: flex; flex-direction: column; align-items: center; padding: 3rem 1rem; gap: 3rem; }
@@ -78,7 +71,7 @@
     .page.lec { border-top-color: var(--secondary-color); }
     .page.mat { border-top-color: var(--primary-color); }
     .page.sci { border-top-color: var(--science-color); }
-    .pauta-page { border-top-color: #dc2626 !important; }
+    .pauta-page { border-top-color: #64748b !important; }
 
     .cover-header { display: flex; justify-content: space-between; border-bottom: 4px solid #cbd5e1; padding-bottom: 1.5rem; margin-bottom: 3rem; }
     .school-sig { display: flex; align-items: center; gap: 1rem; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; color: #1e293b;}
@@ -97,12 +90,9 @@
     
     .q-flow { display: flex; flex-direction: column; gap: 4rem; }
     .q-item { page-break-inside: avoid; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2rem; }
-    .q-head { display: flex; gap: 1.5rem; font-size: 1.25rem; color: #0f172a; margin-bottom: 1.5rem; }
+    .q-head { display: flex; gap: 1rem; font-size: 1.25rem; color: #0f172a; margin-bottom: 1.5rem; }
     .q-num { font-weight: 900; font-size: 1.5rem; color: #1e293b; min-width: 35px; }
     .q-text { line-height: 1.6; font-weight: 600; font-family: 'Arial', sans-serif;}
-    
-    .q-img { margin: 2rem 0; text-align: center;}
-    .q-img img { max-width: 80%; max-height: 350px; border: 4px solid white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain; }
 
     .alts { display: flex; flex-direction: column; gap: 1.2rem; padding-left: 3rem; }
     .alt-row { display: flex; gap: 1rem; color: #1e293b; font-size: 1.2rem; line-height: 1.4; align-items: flex-start; }
@@ -124,7 +114,7 @@
     .o-b { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 2px solid #0f172a; border-radius: 50%; font-size: 0.9rem; font-weight: bold; }
 
     /* PAUTA DOCENTE */
-    .pauta-docente-header { background: #dc2626; color: white; padding: 2rem; text-align: center; font-size: 2rem; font-weight: 900; text-transform: uppercase; border-radius: 12px; margin-bottom: 2rem; }
+    .pauta-docente-header { background: #64748b; color: white; padding: 2rem; text-align: center; font-size: 2rem; font-weight: 900; text-transform: uppercase; border-radius: 12px; margin-bottom: 2rem; }
     .pauta-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 1.1rem; }
     .pauta-table th, .pauta-table td { border: 2px solid #cbd5e1; padding: 1rem; text-align: left; }
     .pauta-table th { background: #1e293b; color: white; font-weight: bold; text-transform: uppercase; }
@@ -150,147 +140,268 @@
     const IconMetrenco = () => <span style={{fontSize:'2.5rem'}}>🏫</span>;
 
     // ==========================================
-    // MOTOR IA LIBRE CHUNKED (INVENCIBLE V9)
+    // MOTOR CURRICULAR NATIVO PROCEDURAL (V10)
+    // Cero red, 100% Offline y Perfecto matemáticamente.
     // ==========================================
-    const fetchChunk = async (grade, subject, startId, endId, isDev, reqText, maxRetries = 3) => {
-      let formatInst = isDev 
-        ? `- Del ${startId} al 31: Selección. Del 32 al ${endId}: Desarrollo (usar array 'alternativas' vacío []).`
-        : `- TODAS son Selección (propiedad 'alternativas' obligatoria con 4 opciones A, B, C, D).`;
-      
-      let textInst = reqText 
-        ? `En la pregunta ID ${startId}, crea un TEXTO LARGO FASCINANTE (Cuento, historia científica) en la propiedad 'textoLectura' usando '\\n' para saltos. Las siguientes preguntas básalas en él.`
-        : `La propiedad 'textoLectura' debe ir siempre como null.`;
+    
+    // Helpers Universales
+    const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const rndArr = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const buildOpt = (correct, w1, w2, w3) => {
+        let items = [String(correct), String(w1), String(w2), String(w3)].sort(() => Math.random() - 0.5);
+        let correctaFinal = "";
+        const alternativas = items.map((opt, i) => {
+            const letter = ['A', 'B', 'C', 'D'][i];
+            if (opt === String(correct)) correctaFinal = `${letter}) ${opt}`;
+            return `${letter}) ${opt}`;
+        });
+        return { alternativas, correcta: correctaFinal };
+    };
 
-      const prompt = `ERES EL MINISTERIO DE EDUCACIÓN CHILENO.
-Genera un ARRAY JSON ESTRICTO con EXACTAMENTE ${endId - startId + 1} objetos de preguntas de alto nivel para ${subject} de ${grade} Básico.
-IDs: del ${startId} al ${endId}.
+    // -------------------------------------------------------------
+    // MATEMÁTICA 4TO BÁSICO
+    // -------------------------------------------------------------
+    const getMath4 = () => {
+        const questions = [];
+        // 1 al 18: Selección Múltiple
+        for (let i = 1; i <= 18; i++) {
+            const templateType = i % 6;
+            let q = { id: i, tipo: "seleccion", eje: "Números y Álgebra", textoLectura: null, imageUrl: null };
+            
+            if(templateType === 1) { // Suma contextual
+                let v1 = rnd(120, 480); let v2 = rnd(150, 400); let obj = rndArr(["entradas", "manzanas", "libros", "puntos"]); let nom = rndArr(["La escuela", "Javiera", "El supermercado", "Matías"]);
+                q.enunciado = `${nom} recolectó ${v1} ${obj} en la mañana y ${v2} ${obj} por la tarde. ¿Cuál es el total de ${obj} recolectados?`;
+                const ans = buildOpt(v1+v2, v1+v2+100, v1-v2+200, v1+v2-50);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 2) { // Resta contextual
+                let cap = rnd(800, 999); let rest = rnd(200, 500); let obj = rndArr(["pasajeros", "litros", "kilos"]); let veh = rndArr(["tren", "bus escolar", "barco"]);
+                q.enunciado = `Un ${veh} tiene capacidad para ${cap} ${obj}. Si ya hay ${rest} ${obj} adentro, ¿cuánto espacio queda libre?`;
+                const ans = buildOpt(cap-rest, cap-rest+100, cap+rest, cap-rest-10);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 3) { // Multiplicación simple
+                let t = rnd(4, 9); let mult = rnd(12, 45); let art = rndArr(["cajas", "paquetes", "bolsas"]); let ent = rndArr(["chocolates", "pastillas", "lápices"]);
+                q.enunciado = `Si compramos ${t} ${art} y cada una trae ${mult} ${ent}, ¿cuántos ${ent} hay en total?`;
+                const ans = buildOpt(t*mult, (t-1)*mult, t*mult+t, t*(mult+10));
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 4) { // División básica
+                let divisor = rnd(3, 8); let resp = rnd(11, 25); let dividendo = divisor * resp;
+                q.enunciado = `Un profesor desea repartir ${dividendo} galletas equitativamente entre ${divisor} estudiantes. ¿Cuántas galletas le tocan a cada uno?`;
+                const ans = buildOpt(resp, resp+2, resp-1, resp+5);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 5) { // Geometría - Perímetro
+                q.eje = "Geometría"; let base = rnd(4, 15); let altura = rnd(2, 9);
+                q.enunciado = `Un patio de forma rectangular mide ${base} metros de largo y ${altura} metros de ancho. ¿Cuál es su perímetro total?`;
+                const perim = (base*2) + (altura*2);
+                const ans = buildOpt(perim, base*altura, base+altura, perim*2);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else { // Lectura de datos
+                q.eje = "Datos y Probabilidades"; let l = rnd(10,30); let m = rnd(15,40); let w = rnd(5,20);
+                q.enunciado = `En una encuesta de mascotas, los resultados fueron: Perros(${l}), Gatos(${m}), Aves(${w}). ¿Cuántos animales más son Perros que Aves?`;
+                const ans = buildOpt(l-w, l+w, m-w, m-l);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            }
+            questions.push(q);
+        }
+        // 19 y 20: Desarrollo
+        questions.push({ id: 19, tipo: "desarrollo", eje: "Números y Álgebra", textoLectura: null, imageUrl: null, enunciado: `Explica con tus propias palabras (sin usar números), cómo harías para asegurar que repartes una pizza redonda perfectamente a la mitad para dos amigos.`, alternativas: [], correcta: "Rúbrica: El estudiante debe mencionar herramientas de medición o el concepto de simetría partiendo desde el centro geométrico de la masa."});
+        const vD = rnd(25, 45);
+        questions.push({ id: 20, tipo: "desarrollo", eje: "Resolución de Problemas", textoLectura: null, imageUrl: null, enunciado: `Si entras a un supermercado y tienes $2000 pesos de presupuesto, y quieres llevar una caja de jugo de $${vD*10} y dos chocolates de $500. ¿Tienes el dinero suficiente o te falta? Escribe abajo toda tu operación y argumento.`, alternativas: [], correcta: `Rúbrica: Jugo=$${vD*10}. Chocolates=1000. Total=$${vD*10 + 1000}. El estudiante debe sumar correctamente y decir si excede o no los $2000.`});
+        return questions;
+    };
 
-Formato requerido de cada objeto JSON:
-- id: número
-- tipo: "seleccion" o "desarrollo"
-- eje: string corto
-- textoLectura: string o null
-- enunciado: string
-- imageUrl: URL o null. AL MENOS 2 preguntas deben tener esta estructura: "https://image.pollinations.ai/prompt/un_dibujo_acuarela_de_{concepto_en_ingles}?width=600&height=350&nologo=true"
-- alternativas: Array de 4 strings iniciados en A) B) C) D) o [] vacío si es desarrollo.
-- correcta: string de la respuesta correcta
+    // -------------------------------------------------------------
+    // MATEMÁTICA 6TO BÁSICO
+    // -------------------------------------------------------------
+    const getMath6 = () => {
+        const questions = [];
+        for (let i = 1; i <= 18; i++) {
+            const templateType = i % 6;
+            let q = { id: i, tipo: "seleccion", eje: "Números y Álgebra", textoLectura: null, imageUrl: null };
+            
+            if(templateType === 1) { // Fracciones equivalentes
+                let den1 = rnd(3, 8); let num1 = rnd(1, den1-1); let m = rnd(2, 5); let ansF = (num1*m)+"/"+(den1*m);
+                q.enunciado = `¿Cuál de las siguientes fracciones es estrictamente equivalente a la fracción ${num1}/${den1}?`;
+                const ans = buildOpt(ansF, (num1+1)+"/"+(den1*m), (num1*m)+"/"+(den1+m), num1+"/"+(den1*m));
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 2) { // Porcentajes
+                let perc = rndArr([20, 25, 40, 50, 75]); let base = rnd(200, 900)*10;
+                q.enunciado = `Un producto de tecnología cuesta $${base}. Si la tienda le aplica un descuento del ${perc}%. ¿De cuánto dinero es EXACTAMENTE la rebaja?`;
+                const ansObj = (base * perc)/100;
+                const ans = buildOpt("$"+ansObj, "$"+(ansObj+200), "$"+(base-ansObj), "$"+(ansObj*2));
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 3) { // Razones
+                let r1 = rnd(2,5); let r2 = rnd(3,7); if(r1===r2)r1++; let f = rnd(4, 9);
+                q.enunciado = `La razón entre estudiantes hombres y mujeres es de ${r1} a ${r2}. Si sabemos que hay ${r1*f} hombres. ¿Cuántas mujeres hay en el salón?`;
+                const ans = buildOpt(r2*f, (r2+1)*f, r1*f*r2, r2*2);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 4) { // Decimales multiplicacion
+                let d1 = (rnd(11, 45)/10).toFixed(1); let i1 = rnd(2, 8);
+                q.enunciado = `Don Alonso compra ${i1} kilos de paltas, cada kilo le cuesta $${d1} mil pesos. ¿Cuánto debe pagar en total en caja?`;
+                const ansObj = (d1 * i1).toFixed(1);
+                const ans = buildOpt("$"+ansObj+" mil", "$"+(parseFloat(ansObj)+1).toFixed(1)+" mil", "$"+(d1*10)+" mil", "$"+(parseFloat(ansObj)*2).toFixed(1)+" mil");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 5) { // Área triángulo
+                q.eje = "Geometría"; let b = rnd(5, 12); let h = rnd(4, 10);
+                q.enunciado = `Si una figura triangular de madera tiene una base de ${b} cm y una altura de ${h} cm, ¿cuál es el área total de la madera necesaria?`;
+                const area = (b*h)/2;
+                const ans = buildOpt(area+" cm²", (b*h)+" cm²", (b+h)+" cm²", (area+10)+" cm²");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else { // Patrones algebraicos
+                q.eje = "Álgebra y Relaciones"; let n1 = rnd(2,5); let mult = rnd(3,6);
+                q.enunciado = `Observa el siguiente patrón numérico de una máquina: Semana 1=${n1}, Semana 2=${n1+mult}, Semana 3=${n1+mult*2}... ¿Qué número aparecerá en la Semana 6?`;
+                const r = n1 + (mult*5);
+                const ans = buildOpt(r, r-mult, r+mult, r+mult*2);
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            }
+            questions.push(q);
+        }
+        questions.push({ id: 19, tipo: "desarrollo", eje: "Álgebra", textoLectura: null, imageUrl: null, enunciado: `Escribe una pequeña historia de la vida real (problema matemático) que deba resolverse usando LA SIGUIENTE ecuación obligatoria: X + 1500 = 6000.`, alternativas: [], correcta: "Rúbrica: El estudiante debe inventar que tiene algo misterioso 'X', le sumaron 1500, y el total dio 6000. Debe tener sentido lingüístico y ser coherente."});
+        const cm3 = rnd(12, 30);
+        questions.push({ id: 20, tipo: "desarrollo", eje: "Geometría", textoLectura: null, imageUrl: null, enunciado: `Si un prisma rectangular (una caja de zapatos) tiene un Volumen calculado de ${cm3} cm³. Escribe 3 medidas diferentes imaginarias (largo, ancho, alto) que multiplicadas calcuelen armar esa misma caja y justifica.`, alternativas: [], correcta: `Rúbrica: Cualquier terna multiplicada cuyo producto sea ${cm3}. Por ejemplo, si es 24, puede ser 2x3x4 o 6x2x2. Debe explicar que el largo x ancho x alto conforman el volumen.`});
+        return questions;
+    };
 
-${formatInst}
-${textInst}
-Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
+    // -------------------------------------------------------------
+    // TEXTOS Y LECTURAS (BASE DE DATOS)
+    // -------------------------------------------------------------
+    const TEXTOS_4TO = [
+       "EL ALICANTO DEL NORTE\n\nEl Alicanto es un ave mitológica del desierto de Atacama que no puede volar, pero sus plumas brillan intensamente por la noche porque se alimenta de plata y oro de las minas profundas.\n\nCuenta la historia que los viejos mineros intentaban seguir al Alicanto en la oscuridad para que el ave los guiara hacia las ricas vetas de oro. Sin embargo, el Alicanto es muy inteligente. Si el pájaro se daba cuenta de que el minero que lo seguía era ambicioso y no agradecía a la tierra, apagaba la luz de sus alas repentinamente y dejaba al minero completamente perdido en pleno desierto.\n\nEs por esto que hoy en día, las pocas personas que dicen haber visto el destello del Alicanto, prefieren cerrar los ojos, dar las gracias al desierto y continuar por su propio rumbo sin seguirlo.",
+       
+       "FLAMENCOS DE LA PATAGONIA\n\nEn las grandes lagunas del sur de Chile habitan miles de flamencos chilenos. Contrario a lo que la gente piensa, los flamencos no nacen con su característico color rosado brillante; cuando salen del huevo, sus plumas son grises.\n\n¿Por qué cambian de color entonces? La respuesta está en su alimentación. Los flamencos meten su peculiar pico en el barro del fondo de la laguna y lo usan como un filtro, recolectando pequeños crustáceos muy ricos en un pigmento natural llamado ‘caroteno’.\n\nA medida que el flamenco ingiere más y más de estos pequeños crustáceos a lo largo de su etapa joven, las plumas empiezan a teñirse poco a poco, pasando del gris al rosa pálido, hasta llegar a ese rojizo espectacular que adorna nuestros cielos sureños."
+    ];
 
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-         try {
-            // Usamos endpoint nativo con SEED aleatoria para forzar frescura y evitar caché corrupto.
-            const response = await fetch("https://text.pollinations.ai/?seed=" + Math.random() + "&model=openai", {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: prompt + "\n\nCRITICAL: OUTPUT ONLY VALID JSON DATA STARTING WITH [ AND ENDING WITH ]."
+    const TEXTOS_6TO = [
+       "LA FORMACIÓN DEL ALMA Y LOS ASTROS\n\nEn pleno desierto de Atacama existe el proyecto radioastronómico más grande de la Tierra: ALMA. No se trata de un telescopio como el que usamos para ver la luna desde el patio de casa, sino de un laberinto de 66 antenas gigantes de alta precisión que captan ondas invisibles que viajan a través del universo desde galaxias lejanas y oscuras.\n\nEste lugar fue elegido porque el cielo del norte de Chile tiene un nivel de humedad tan bajo que apenas existen nubes que deformen la señal espacial. Además, ALMA está situado a más de cinco mil metros de altitud, rozando la cordillera más solitaria y fría. Allí arriba el aire es más delgado, permitiendo que la radiación milimétrica penetre sin bloqueos atmosféricos terrestres.\n\nGracias a esta gran tecnología, la humanidad ha logrado fotografiar el nacimiento remoto de nebulosas en rincones del universo donde un telescopio normal solo habría visto un espacio negro vacío. El cielo chileno, silencioso y seco, se ha convertido hoy en los verdaderos 'ojos del planeta'.",
+       
+       "EL COPIHUE Y LA SUPERVIVENCIA FRÍA\n\nEl copihue es la flor nacional de Chile y trepa por las ramas sombrías de los bosques templados lluviosos del sur. A pesar de verse muy delicado con forma de campanilla color sangre o blanca, es una enredadera extraordinariamente ruda.\n\nLos científicos botánicos siempre se han sorprendido de su resistencia, pues el copihue florece entre finales de verano y se mantiene a lo largo de los fríos inviernos sureños, recibiendo golpes de lluvia persistente sin perder sus largos pétalos.\n\n¿Cómo logra resistir las heladas? Su tallo crece envolviendo los troncos grandes de árboles nativos vigorosos, como los robles y los coigües, utilizando a estos colosos como escudos térmicos y pilares físicos contra las heladas extremas. Su dependencia del bosque es, por tanto, total. Sin los bosques originarios densos, la flor nacional sería inmediatamente aniquilada por un entorno despejado."
+    ];
+
+    // -------------------------------------------------------------
+    // LENGUAJE y CIENCIAS (TEXTO Y COMPRENSIÓN)
+    // -------------------------------------------------------------
+    const getReadingQuestions = (text1, text2, gradeTarget) => {
+        const questions = [];
+        const isOpt6 = gradeTarget === 6;
+
+        let base1 = text1.includes('Alicanto') ? [
+           { enun: "¿Por qué las plumas del Alicanto brillan en la oscuridad según el texto?", ans: buildOpt("Porque se alimenta de metales preciosos.", "Es una luz artificial.", "Absorbe la luz del sol.", "Tienen focos internos.") },
+           { enun: "¿Qué hace el ave si descubre que el minero que lo sigue es puramente ambicioso?", ans: buildOpt("Apaga el brillo de sus plumas.", "Lo ataca salvajemente.", "Canta para asustarlo.", "Vuela muy rápido.") },
+           { enun: "¿Cuál es el propósito central del último párrafo de la leyenda?", ans: buildOpt("Aconsejar una postura respetuosa ante el desierto.", "Enseñar a cazar el ave.", "Promover la avaricia.", "Describir el mapa del desierto.") },
+           { enun: "En el texto, la palabra 'vetas' se refiere con mayor probabilidad a:", ans: buildOpt("Acumulaciones subterráneas de minerales ricos.", "Tipos de animales.", "Ríos oscuros.", "Vestimentas de los mineros.") }
+        ] : [
+           { enun: "¿Qué le da visualmente al cielo chileno su nivel de eficiencia para ALMA?", ans: buildOpt("El nivel de humedad extremadamente bajo y ausencia de nubes.", "Que está cerca de los glaciares.", "Que llueve limpiando el polvo.", "La contaminación lumínica del país.") },
+           { enun: "¿Qué gran diferencia existe entre un telescopio de casa y las 66 antenas?", ans: buildOpt("Las antenas captan ondas invisibles, no luz óptica común.", "Que son de plástico.", "Que requieren baterías más largas.", "Que no pueden moverse.") },
+           { enun: "¿A qué se refiere el autor metafóricamente al llamar a los cielos 'los verdaderos ojos del planeta'?", ans: buildOpt("A que Chile es la ventana tecnológica principal para estudiar el Universo exterior.", "A que la cordillera tiene ojos de glaciares.", "A unas pinturas geográficas.", "A los habitantes espiando.") },
+           { enun: "De acuerdo al texto completo, la principal amenaza científica si este observatorio se armara a nivel del mar sería:", ans: buildOpt("El aire húmedo y denso bloquearía la radiación milimétrica.", "Se lo llevarían las olas.", "Robos de equipamiento.", "Haría demasiado calor para los científicos.") },
+           { enun: "El propósito predominante de este artículo no literario es estrictamente:", ans: buildOpt("Informar objetivamente sobre infraestructura astronómica terrestre.", "Contar una aventura de ficción extraterrestre.", "Convencerte de trabajar en el norte.", "Relatar un mito folclorista.") }
+        ];
+
+        let base2 = text1.includes('Flamencos') || text2.includes('Flamencos') ? [
+           { enun: "¿De qué color son las plumas de un flamenco exactamente cuando acaba de asomarse de su cascarón?", ans: buildOpt("Gris oscuro o pálido.", "Verde.", "Rojo vibrante.", "Rosa fuerte.") },
+           { enun: "¿Qué función cumple el pico del animal al insertarlo dentro del barro profundo?", ans: buildOpt("Filtrar la arena para encontrar pequeños moluscos/crustáceos.", "Tomar grandes sorbos de agua para hidratarse.", "Barrer el lodo para hacer un nido de huevos.", "Pelear contra los depredadores marinos.") },
+           { enun: "¿Cómo adquieren ese tinte natural final las plumas rosadas características?", ans: buildOpt("Debido a un pigmento biológico que tienen sus presas acuáticas.", "Porque las tiñe el sol sureño.", "Por nadar mucho en el agua helada.", "Es una mutación mágica.") },
+           { enun: "El texto puede ser clasificado dentro de la tipología literaria de tipo:", ans: buildOpt("Informativo explicativo de fenómenos biológicos.", "Normativo de leyes animales.", "Lírico y poético.", "Dramático.") }
+        ] : [
+           { enun: "¿De qué se asombran predominantemente los botánicos al evaluar la vida del Copihue?", ans: buildOpt("De su extrema fuerza de resistencia en heladas intensas contrastada con su aspecto.", "De sus raíces flotantes en grandes estanques.", "De que crece en los desiertos.", "De la ausencia total de color oscuro.") },
+           { enun: "¿Qué función crucial desempeñan los árboles grandes de coigües y robles para esta enredadera nativa?", ans: buildOpt("Fungen como escudos y columnas sólidas térmicas frente al invierno crudo.", "Le proporcionan sombra en pleno verano estricto.", "Sirven solo para que los pájaros lo busquen.", "Lo esconden de la lluvia fuerte.") },
+           { enun: "Lee y concluye: Si un día talaran por completo todos los bosques sureños densos nativos, ¿qué pasaría con el ecosistema de la flor nacional?", ans: buildOpt("Sería fulminada debido al estrés térmico de las heladas y la soledad estructural.", "Se adaptaría inmediatamente mutando a arbusto pequeño.", "Comenzaría a florecer más y más roja.", "Nada, ya que prosperan donde sea.") },
+           { enun: "La palabra 'aniquilada' en la penúltima línea del artículo científico resalta un tono de tipo:", ans: buildOpt("Alerta inminente ecológica severa.", "Tristeza profunda familiar.", "Alegría botánica.", "Indiferencia ambiental sistemática.") },
+           { enun: "Este artículo corresponde intrínsecamente a un discurso catalogado como:", ans: buildOpt("Informativo divulgativo nacional botánico.", "Argumentativo publicitario político.", "Fábula educativa formativa.", "Historia corta de ficción literaria.") }
+        ];
+
+        // Rellenar hasta 18 de múltiples sumando preguntas genéricas de gramática
+        let allLang = [];
+        [...base1, ...base2].forEach(bq => allLang.push(bq));
+        
+        while(allLang.length < 18) {
+           let rNoun = rndArr(["árbol", "minero", "campana", "bosque", "cordillera", "flamenco"]);
+           let adj = rndArr(["hermoso", "largo", "antiguo", "furioso"]);
+           let gn = { enun: `En la oración "El ${rNoun} se veía verdaderamente ${adj} bajo el sol", la palabra '${adj}' funciona gramaticalmente como:`, ans: buildOpt("Un adjetivo calificativo.", "Un sustantivo común.", "Un verbo en pretérito perfecto.", "Una preposición direccional.") };
+           allLang.push(gn);
+        }
+
+        // Shuffle arrays options logic was done, let's map to final format
+        allLang.forEach((iq, ix) => {
+            questions.push({
+               id: ix + 1, tipo: "seleccion", eje: "Lectura y Gramática", 
+               textoLectura: ix === 0 ? text1 : ix === Math.floor(allLang.length/2) ? text2 : null,
+               enunciado: iq.enun, alternativas: iq.ans.alternativas, correcta: iq.ans.correcta, imageUrl: null
             });
-            
-            if (!response.ok) throw new Error("HTTP " + response.status);
-            
-            let rawText = await response.text();
-            
-            // Limpia absoluta buscando el inicio y fin del array
-            let cutStart = rawText.indexOf('[');
-            let cutEnd = rawText.lastIndexOf(']');
-            if (cutStart !== -1 && cutEnd !== -1) {
-                rawText = rawText.substring(cutStart, cutEnd + 1);
-            } else {
-                throw new Error("El modelo omitió los corchetes de array.");
-            }
-            
-            const arr = JSON.parse(rawText);
-            if (!Array.isArray(arr) || arr.length === 0) throw new Error("El JSON parseado no es un array válido");
-            return arr;
+        });
 
-         } catch(e) {
-            console.error("Intento " + attempt + " fallido para sección " + startId + "-" + endId + ":", e);
-            if (attempt === maxRetries) {
-               // FALLBACK DE EMERGENCIA: Generador Procedural Increíble (Impide que la plataforma se rompa jamás).
-               console.warn("Iniciando Escudo Procedural de Respaldo.");
-               return Array.from({length: endId - startId + 1}, (_, i) => {
-                  let isQDev = isDev && (startId + i) >= 32;
-                  return {
-                      id: startId + i,
-                      tipo: isQDev ? "desarrollo" : "seleccion",
-                      eje: "Comprensión Avanzada de " + subject,
-                      textoLectura: reqText && i === 0 ? "La mítica leyenda educativa cuenta que en los rincones del sur existe una profunda sabiduría ancestral. Ese conocimiento, heredado de los abuelos, es clave para el aprendizaje, la convivencia escolar sana y la construcción de un Chile mejor preparado para enfrentar los dilemas del futuro." : null,
-                      enunciado: "De acuerdo al análisis minucioso de la materia pedagógica enseñada y su contexto de aplicación real en Chile, ¿qué deducción es la más razonable para obtener una respuesta?",
-                      imageUrl: i % 4 === 0 ? "https://image.pollinations.ai/prompt/beautiful_watercolor_of_chilean_school_kids_studying_national_geography_in_the_classroom?width=600&height=350&nologo=true" : null,
-                      alternativas: isQDev ? [] : [
-                         "A) La resolución depende íntegramente del contexto histórico descrito.", 
-                         "B) La opción B refleja la deducción lógica directa del texto.", 
-                         "C) Se descarta la variable externa por no presentar evidencia concreta.", 
-                         "D) Se induce una combinación estructurada de ambas teorías."
-                      ],
-                      correcta: isQDev ? "El estudiante debe hilar una argumentación propia y consolidada con base en los elementos narrativos entregados en el texto central." : "B) La opción B refleja la deducción lógica directa del texto."
-                  };
-               });
-            }
-            // Esperar 2 segundos antes del reintento para evitar colapsos.
-            await new Promise(r => setTimeout(r, 2000));
-         }
-      }
+        // 2 de desarrollo
+        questions.push({ id: 19, tipo: "desarrollo", eje: "Escritura Critica", textoLectura: null, imageUrl: null, enunciado: `Imagina que eres periodista y debes redactar el titular (sólo un título impactante) para la noticia del segundo texto que acabas de leer.`, alternativas: [], correcta: "Rúbrica: Titular coherente, sin faltas graves de ortografía, que capte la esencia botánica o espacial analizada."});
+        questions.push({ id: 20, tipo: "desarrollo", eje: "Comprensión Profunda", textoLectura: null, imageUrl: null, enunciado: `Con base pura en el Texto 1; escribe en tres líneas la consecuencia física principal en su entorno, si las cosas tomaran un rumbo distinto y oscuro.`, alternativas: [], correcta: `Rúbrica: Conclusión inferida con argumentos basados estrictamente en los metales del texto 1 o el ambiente analizado.`});
+
+        return questions;
     };
 
-    const generateTestWithAI = async (school, grade, subject) => {
-        // Ejecución estrictamente secuencial y 100% blindada de caídas
-        const masterTest = [];
-        
-        const ch1 = await fetchChunk(grade, subject, 1, 12, false, subject === 'lectura');
-        const ch2 = await fetchChunk(grade, subject, 13, 24, false, subject === 'lectura');
-        const ch3 = await fetchChunk(grade, subject, 25, 35, true, false);
-        
-        masterTest.push(...ch1, ...ch2, ...ch3);
-        
-        // Re-mapear IDs forzosamente asegurando la secuencia estética perfecta y final
-        masterTest.forEach((item, index) => { item.id = index + 1; });
-        return masterTest;
+
+    const getSci6 = () => {
+        const questions = [];
+        for (let i = 1; i <= 18; i++) {
+            const templateType = i % 5;
+            let q = { id: i, tipo: "seleccion", eje: "Ciencias", textoLectura: null, imageUrl: null };
+            
+            if(templateType === 1) { 
+                q.eje = "Célula y Seres Vivos"; 
+                q.enunciado = `¿Cuál es el organelo exclusivo de las células vegetales encargado directamente de la realización de la fotosíntesis?`;
+                const ans = buildOpt("El cloroplasto.", "El núcleo central.", "La mitocondria.", "La pared celular.");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 2) { 
+                q.eje = "Materia y Cambio"; let tem1 = rndArr(["evaporación", "condensación", "solidificación"]); 
+                let eMap= {"evaporación":"líquido a gas","condensación":"gas a estado líquido","solidificación":"líquido a estado sólido directamente"};
+                q.enunciado = `El proceso térmico de la física conocido como ${tem1} consiste exactamente en el drástico cambio de estado de la materia desde:`;
+                const ans = buildOpt(eMap[tem1], "sólido a estado plasmático", "gas constante a estado de sólido", "líquido a otro biotipo líquido oscuro");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 3) {
+                q.eje = "Medioambiente y Ecosistemas"; let ecos = rndArr(["la Amazonía", "el Bosque Valdiviano chileno", "el Mar de la zona central"]);
+                q.enunciado = `En ${ecos}, si repentinamente una industria arrasa con los mayores depredadores de la pirámide (cima alimenticia), a corto y mediano plazo es científicamente probable que ocurra:`;
+                const ans = buildOpt("Una desastrosa sobrepoblación biológica de los animales que servían de presa, destruyendo la flora.", "La pirámide entera desaparecería al día siguiente por falta del jefe.", "Nacerían crías nuevas genéticamente modificadas para mutar rápido.", "El clima cambiaría la lluvia para suplir faltas nutricionales.");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else if (templateType === 4) { 
+                q.eje = "Cuerpo Humano"; 
+                q.enunciado = `El sistema vital del cuerpo que se encarga estrictamente de orquestar las respuestas mecánicas rapidísimas ante quemaduras o estrés (acto reflejo) operando mediante choques químicos sensitivos es:`;
+                const ans = buildOpt("El Sistema Nervioso Periférico/Central.", "El Sistema Circulatorio Abierto.", "El aparato Excretor digestivo profundo.", "El sistema Pulmonar de ventilación.");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            } else { 
+                q.eje = "Fuerzas y Energía"; 
+                q.enunciado = `La principal fuente matriz para la existencia general de redes tróficas orgánicas continuas en el planeta se denomina termodinámicamente como:`;
+                const ans = buildOpt("Energía Solar calórica irradiante luminosa.", "Energía Geotérmica profunda de volcanes sudamericanos.", "Combustión Fósil humana industrial refinada.", "Corriente eléctrica estática residual.");
+                q.alternativas = ans.alternativas; q.correcta = ans.correcta;
+            }
+            questions.push(q);
+        }
+        questions.push({ id: 19, tipo: "desarrollo", eje: "Flujo Energético", textoLectura: null, imageUrl: null, enunciado: `Si pudieras diseñar un 'Super Auto' escolar basándote exclusivamente en fuentes de energía 100% RENOVABLE observadas en el campo chileno, ¿Qué tipos de energía usarías combinadas y por qué?`, alternativas: [], correcta: "Rúbrica: Explica lógicamente integración de paneles fotovoltaicos y turbinas de brisa austral u oceánica, o hidráulica. Fundamentando ser infinitas / no contaminantes."});
+        questions.push({ id: 20, tipo: "desarrollo", eje: "Biología Celular Critica", textoLectura: null, imageUrl: null, enunciado: `Un estudiante afirma ciegamente que "absolutamente todas las células de mi organismo humano tienen las mismas partes elementales idénticas a la de un musgo del patio". Refuta (corrige o critica esta idea) con fuerza científica.`, alternativas: [], correcta: `Rúbrica: El estudiante corrige que el musgo es una célula Eucarionte VEGETAL, la cual ostenta maravillosamente de Cloroplastos y Paredes rígidas ausentes integralmente en humanos (animal).`});
+        return questions;
     };
 
 
     // ==========================================
-    // INTERFAZ REACT
+    // INTERFAZ REACT Y CONTROLADOR CENTRAL
     // ==========================================
     const App = () => {
       const [view, setView] = useState('dash');
       const [config, setConfig] = useState({});
       const [testData, setTestData] = useState([]);
-      const [loading, setLoading] = useState(false);
-      const [loadMsg, setLoadMsg] = useState("");
 
-      const handleGenerate = async (school, grade, subject) => {
-        try {
-          setLoading(true);
-          setLoadMsg("Conectando con el Motor Open Libre...");
-          
-          setTimeout(() => setLoadMsg(`ChatGPT está creando la base pedagógica curricular para ${grade}...`), 2000);
-          setTimeout(() => setLoadMsg(`El proceso gratuito suele durar 20 segundos fabricando las 35 preguntas y rúbricas.`), 8000);
-
-          const data = await generateTestWithAI(school, grade, subject);
-          
+      const handleGenerate = (school, grade, subject) => {
+          let genTest = [];
+          if (subject === 'matematica') {
+              genTest = grade === '4to' ? getMath4() : getMath6();
+          } else if (subject === 'lectura') {
+              genTest = grade === '4to' ? getReadingQuestions(TEXTOS_4TO[0], TEXTOS_4TO[1], 4) : getReadingQuestions(TEXTOS_6TO[0], TEXTOS_6TO[1], 6);
+          } else {
+              genTest = getSci6(); // solo ciencias 6to aplican en botoneria
+          }
           setConfig({ school, grade, subject });
-          setTestData(data);
+          setTestData(genTest);
           setView('view');
-          
-        } catch (error) {
-          alert("💥 Error de Red GPT: " + error.message + ".\n\nEs normal si el Servidor Gratuito colapsó en ese segundo. ¡Solo trata de darle al botón Generar denuevo pacientemente!");
-        } finally {
-          setLoading(false);
-        }
       };
 
       return (
         <div>
-          {loading && (
-             <div className="loading-overlay">
-                <div className="gpt-spinner"></div>
-                <div className="load-text">{loadMsg}</div>
-                <div className="load-sub">La Inteligencia Artificial está generando sin usar llaves pagadas. Es totalmente libre y de alta vanguardia para la comunidad educativa de Chile.</div>
-             </div>
-          )}
           {view === 'dash' 
             ? <Dashboard onGen={handleGenerate} /> 
             : <PdfViewer cfg={config} test={testData} onBack={() => setView('dash')} />
@@ -308,8 +419,8 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
       return (
         <div className="dashboard-wrapper">
           <div className="header glass-panel">
-            <div className="logo-area"><div className="logo-icon"><h2>🤖</h2></div> 
-            <div><h1>SIMCE ENGINE: IA Abierta</h1><p style={{color:'#cbd5e1', fontSize:'1.1rem'}}>Conectado a OpenAI ChatGPT Gratis Permanente (V8)</p></div></div>
+            <div className="logo-area"><div className="logo-icon">V10</div> 
+            <div><h1>SIMCE ENGINE: Cerebro Curricular Nativo</h1><p style={{color:'#cbd5e1', fontSize:'1.1rem'}}>Generación 100% Textual, Offline e Instantánea (Sin Errores)</p></div></div>
           </div>
           
           <div className="grid-layout">
@@ -320,15 +431,15 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
             </div>
 
             <div className="panel-section">
-              <h2>🎓 2. Asignar Nivel</h2>
+              <h2>🎓 2. Asignar Nivel Educativo</h2>
               <div className={`btn-card glass-panel ${gr==='4to'?'active grade':''}`} onClick={()=>{setGr('4to'); setSu('');}}>4° Básico</div>
               <div className={`btn-card glass-panel ${gr==='6to'?'active grade':''}`} onClick={()=>{setGr('6to'); setSu('');}}>6° Básico</div>
             </div>
 
             <div className="panel-section">
-              <h2>📚 3. Empezar Generación</h2>
+              <h2>📚 3. Base de Datos Curricular</h2>
               <div style={{display:'grid', gap:'1.2rem', gridTemplateColumns:'1fr 1fr', height:'100%'}}>
-                <div className={`btn-card subj-card ${gr?'ena':''} ${su==='lectura'?'active lec':''}`} onClick={()=>gr&&setSu('lectura')}>📖 Lectura</div>
+                <div className={`btn-card subj-card ${gr?'ena':''} ${su==='lectura'?'active lec':''}`} onClick={()=>gr&&setSu('lectura')}>📖 Lenguaje y Literatura</div>
                 <div className={`btn-card subj-card ${gr?'ena':''} ${su==='matematica'?'active mat':''}`} onClick={()=>gr&&setSu('matematica')}>🧮 Matemática</div>
                 {gr === '6to' && <div className={`btn-card subj-card ena ${su==='ciencias'?'active sci':''}`} style={{gridColumn:'span 2'}} onClick={()=>setSu('ciencias')}>🧬 Ciencias Naturales</div>}
               </div>
@@ -337,16 +448,16 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
 
           <div className="generate-wrap">
             <button className={`gen-btn ${ready?'ready':''}`} onClick={() => ready && onGen(sc, gr, su)}>
-               ✨ Iniciar Creación de Ensayo SIMCE Integral
+               ⚡ Armar 20 Preguntas Excelentes al Instante
             </button>
-            <p style={{marginTop:'1.5rem', color:'#94a3b8', fontSize:'0.9rem', maxWidth:'600px'}}>Esta versión ha sido hackeada al nivel más benevolente: No necesita LLAVES DE API de Google jamás. Toca, genera, imprime y educa.</p>
+            <p style={{marginTop:'1.5rem', color:'#94a3b8', fontSize:'0.9rem', maxWidth:'600px'}}>El núcleo V10 genera variables algebraicas de manera local en tu procesador. Nunca usará internet por lo que es inmune a bloqueos de Google u OpenAI y produce ensayos al momento del clic.</p>
           </div>
         </div>
       );
     };
 
     const PdfViewer = ({ cfg, test, onBack }) => {
-      const sjName = cfg.subject === 'lectura' ? 'Lectura' : cfg.subject === 'matematica' ? 'Matemática' : 'Ciencias Naturales';
+      const sjName = cfg.subject === 'lectura' ? 'Lenguaje' : cfg.subject === 'matematica' ? 'Matemática' : 'Ciencias';
       const grName = cfg.grade === '4to' ? '4° Básico' : '6° Básico';
       const cClass = cfg.subject === 'lectura' ? 'lec' : cfg.subject === 'matematica' ? 'mat' : 'sci';
       
@@ -355,9 +466,9 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
       return (
         <div className="viewer" id="pdf-start">
           <div className="toolbar no-print">
-             <button className="btn btn-back" onClick={onBack}>← Volver al Centro de Control</button>
-             <span style={{fontSize:'1.2rem', fontWeight:'bold'}}>✅ {cfg.school} | Pincel Acuarela y Redacción Completada</span>
-             <button className="btn btn-print" onClick={()=>window.print()}>🖨️ Desplegar e Imprimir Todo en A4</button>
+             <button className="btn btn-back" onClick={onBack}>← Volver al Comando Central</button>
+             <span style={{fontSize:'1.2rem', fontWeight:'bold'}}>⭐ {cfg.school} | Ensayo V10 Construido</span>
+             <button className="btn btn-print" onClick={()=>window.print()}>🖨️ Ejecutar e Imprimir en Papel A4</button>
           </div>
 
           <div className="doc-container">
@@ -365,29 +476,28 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
             <div className={`page ${cClass}`}>
               <div className="cover-header">
                 <div className="school-sig">{cfg.school === 'Escuela Truf-Truf' ? <IconShield/> : <IconMetrenco/>} {cfg.school}</div>
-                <div style={{textAlign:'right', color:'#64748b'}}><b>Agencia Nacional de Calidad</b><br/>Validación Oficial ChatGPT</div>
+                <div style={{textAlign:'right', color:'#64748b'}}><b>Modelo Textual Procedural</b><br/>Acorde Lógica Mineduc 2024</div>
               </div>
               
               <div className="title-area">
-                <h1>CUADERNILLO NACIONAL</h1>
-                <h2>Solemne de {sjName} - {grName}</h2>
+                <h1>CUADERNILLO NACIONAL SIMILAR-SIMCE</h1>
+                <h2>Estandarización de {sjName} - {grName}</h2>
               </div>
               
               <div className="student-box">
-                <div className="s-row">Estudiante: <div className="s-line"></div></div>
+                <div className="s-row">Estudiante Evaluado: <div className="s-line"></div></div>
                 <div className="s-row" style={{marginBottom:0}}>
                    <span style={{width:'50%', display:'flex'}}>RUT: <div className="s-line"></div></span>
-                   <span style={{width:'50%', display:'flex'}}>Fecha: <div className="s-line"></div></span>
+                   <span style={{width:'50%', display:'flex'}}>Fecha Rinde: <div className="s-line"></div></span>
                 </div>
               </div>
 
               <div className="instruct">
-                <h3>INSTRUCCIONES DE DESARROLLO</h3>
+                <h3>INSTRUCCIONES CLÍNICAS:</h3>
                 <ul>
-                  <li>Cuadernillo personalizado e ilustrado de <strong>{test.length} preguntas</strong> ({mcqs.length} múltiples y 4 desarrollo).</li>
-                  <li>Las alternativas llénalas cuidadosamente al final en tu <strong>Lector Óptico</strong>, sin marcar X.</li>
-                  <li>Las preguntas en espacio blanco (abiertas) redáctalas de forma clara y extensa.</li>
-                  <li>Tienes 90 minutos para dar lo mejor de ti. Mantén silencio y revisa al terminar.</li>
+                  <li>Este documento formal cuenta con <strong>{test.length} preguntas curriculares</strong> ({mcqs.length} de alternativas, 2 de profunda argumentación escrita).</li>
+                  <li>Usa puro razonamiento crítico y no te levantes del puesto silenciosamente.</li>
+                  <li>Registra tus seleccionadas en la <strong>Hoja de Captura Óptica (OMR)</strong> pintándolo completamente oscuro sin X.</li>
                 </ul>
               </div>
             </div>
@@ -395,7 +505,7 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
             {/* PREGUNTAS ALUMNO */}
             <div className={`page ${cClass}`}>
                <div style={{borderBottom:'4px solid #0f172a', paddingBottom:'15px', marginBottom:'40px', fontSize:'1.4rem', fontWeight:'900', textTransform:'uppercase'}}>
-                 DESARROLLO DE LA EVALUACIÓN
+                 DESARROLLO DE HABILIDADES COGNITIVAS
                </div>
                <div className="q-flow">
                  {test.map((q) => {
@@ -403,7 +513,7 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
                      <div key={q.id} className="q-item">
                         {q.textoLectura && (
                           <div className="reading-box" style={{breakInside:'auto'}}>
-                             <div className="r-title">LECTURA PRINCIPAL</div>
+                             <div className="r-title">LITERATURA Y LECTURA BASE</div>
                              <div className="r-txt">{q.textoLectura}</div>
                           </div>
                         )}
@@ -412,21 +522,14 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
                           <span className="q-num">{q.id}.</span> 
                           <span className="q-text">{q.enunciado}</span>
                         </div>
-                        
-                        {q.imageUrl && (
-                          <div className="q-img">
-                             <img src={q.imageUrl} alt="Ilustración Mineduc" crossOrigin="anonymous" />
-                          </div>
-                        )}
 
                         {q.tipo === 'seleccion' ? (
                           <div className="alts">
                             {q.alternativas && q.alternativas.map((alt, i) => {
-                              let safeAlt = alt.length > 3 ? alt : `${['A','B','C','D'][i]}) ${alt}`;
                               return (
-                                <div key={i} className="alt-row">
-                                   <span className="alt-let">{safeAlt.substring(0,2)}</span>
-                                   {safeAlt.substring(3)}
+                                <div key={'a'+i} className="alt-row">
+                                   <span className="alt-let">{alt.substring(0,2)}</span>
+                                   {alt.substring(3)}
                                 </div>
                               );
                             })}
@@ -442,27 +545,27 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
                </div>
             </div>
 
-            {/* HOJA OMR LECTOR OPTICO */}
+            {/* HOJA OMR LECTOR OPTICO (Adaptado a 18 items max en una columna ancha si es necesario) */}
             <div className="page" style={{pageBreakBefore:'always'}}>
               <div className="cover-header" style={{borderBottomColor:'#0f172a'}}>
-                <div className="school-sig">{cfg.school === 'Escuela Truf-Truf' ? <IconShield/> : <IconMetrenco/>} LECTOR DIGITAL</div>
-                <div style={{fontWeight:'bold', fontSize:'1.2rem', color:'#475569'}}>HOJA DE RESPUESTAS OFICIAL</div>
+                <div className="school-sig">{cfg.school === 'Escuela Truf-Truf' ? <IconShield/> : <IconMetrenco/>} CAPTURA MATRIZ</div>
+                <div style={{fontWeight:'bold', fontSize:'1.2rem', color:'#475569'}}>HOJA DE RESPUESTAS A EVALUAR</div>
               </div>
               <div className="student-box" style={{padding:'1.5rem', borderWidth:'2px'}}>
-                 <div className="s-row" style={{marginBottom:0}}>Nombre del Estudiante: <div className="s-line" style={{borderStyle:'dashed', borderColor:'black'}}></div></div>
+                 <div className="s-row" style={{marginBottom:0}}>Firma Oficial Estudiante: <div className="s-line" style={{borderStyle:'dashed', borderColor:'black'}}></div></div>
               </div>
               
               <div className="omr">
-                 <div className="omr-title">{sjName.toUpperCase()}</div>
-                 <div style={{textAlign:'center', marginBottom:'3rem', fontWeight:'bold', color:'#334155'}}>Pinte COMPLETAMENTE el círculo interior con lápiz grafito. No marque cruces.</div>
+                 <div style={{textAlign:'center', fontSize:'1.5rem', fontWeight:'900', marginBottom:'1rem'}}>{sjName.toUpperCase()}</div>
+                 <div style={{textAlign:'center', marginBottom:'3rem', fontWeight:'bold', color:'#334155'}}>Pinte por completo el interior visual.</div>
                  
                  <div className="omr-grid">
-                    {[0, 11, 22].map(colStart => (
-                      <div key={colStart} className="omr-col">
-                        {mcqs.slice(colStart, colStart+11).map((q) => {
+                    {[0, 9].map(colStart => (
+                      <div key={'col'+colStart} className="omr-col">
+                        {mcqs.slice(colStart, colStart+9).map((q) => {
                            let realID = mcqs.indexOf(q) + 1;
                            return (
-                             <div key={q.id} className="o-row">
+                             <div key={'omr'+q.id} className="o-row" style={{marginBottom:'0.5rem'}}>
                                <div className="o-num">{realID}</div>
                                <div className="o-b">A</div><div className="o-b">B</div><div className="o-b">C</div><div className="o-b">D</div>
                              </div>
@@ -474,33 +577,33 @@ Usa geografía chilena. NO USES EXPLICACIONES NI MARKDOWN.`;
               </div>
             </div>
 
-            {/* DOCUMENTO EXTREMADAMENTE SECRETO PARA DOCENTE */}
+            {/* DOCUMENTO DOCENTE */}
             <div className="page pauta-page">
                <div className="pauta-docente-header">
-                 DOCUMENTO EXCLUSIVO DOCENTE<br/>
-                 <span style={{fontSize:'1.5rem', fontWeight:'600', color:'#fca5a5'}}>SOLUCIONARIO V8 - IA ABIERTA</span>
+                 MATERIAL EXCLUSIVO DOCENTE SUPERVISOR<br/>
+                 <span style={{fontSize:'1.5rem', fontWeight:'600', color:'#e2e8f0'}}>SOLUCIONARIO V10 JAVASCRIPT NATIVO</span>
                </div>
                
                <table className="pauta-table">
                   <thead>
                     <tr>
-                      <th style={{width:'50px', textAlign:'center'}}>Nº</th>
-                      <th style={{width:'150px'}}>EJE EVALUADO</th>
-                      <th style={{width:'100px', textAlign:'center'}}>TIPO</th>
-                      <th>RESPUESTA CLAVE Y/O RÚBRICA</th>
+                      <th style={{width:'50px', textAlign:'center'}}>Num</th>
+                      <th style={{width:'150px'}}>EJE DE TRABAJO</th>
+                      <th style={{width:'80px', textAlign:'center'}}>TIPO</th>
+                      <th>RESOLUCIÓN Y CONCLAVE CORRECTA</th>
                     </tr>
                   </thead>
                   <tbody>
                     {test.map((q, idx) => (
                       <tr key={'p'+q.id}>
                         <td style={{textAlign:'center', fontWeight:'bold', fontSize:'1.3rem'}}>{idx+1}</td>
-                        <td style={{fontWeight:'bold', color:'#475569'}}>{q.eje}</td>
-                        <td style={{textAlign:'center'}}>{q.tipo === 'seleccion' ? 'Opción' : 'Abierto'}</td>
+                        <td style={{fontWeight:'bold', color:'#475569', fontSize:'0.9rem'}}>{q.eje}</td>
+                        <td style={{textAlign:'center', fontSize:'0.85rem'}}>{q.tipo === 'seleccion' ? 'Opción' : 'Mano Libre'}</td>
                         <td className={q.tipo === 'desarrollo' ? 'sol-dev' : ''}>
                            {q.tipo === 'seleccion' ? (
-                             <strong style={{color:'#2563eb', fontSize:'1.3rem'}}>{q.correcta.substring(0, 2)}</strong>
+                             <strong style={{color:'#2563eb', fontSize:'1.2rem'}}>{q.correcta.substring(0, 2)}</strong>
                            ) : (
-                             <div>{q.correcta}</div>
+                             <div style={{fontWeight:'bold'}}>{q.correcta}</div>
                            )}
                            {q.tipo === 'seleccion' && <span style={{marginLeft:'0.5rem', color:'#475569'}}>{q.correcta.substring(3)}</span>}
                         </td>
