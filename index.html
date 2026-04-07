@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Master SIMCE Pro - Motor Procedural V6</title>
+  <title>Master SIMCE Pro - IA Gemini Oculta (V7)</title>
   
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -18,6 +18,7 @@
       --primary-color: #3b82f6; 
       --secondary-color: #f43f5e; 
       --science-color: #10b981; 
+      --gemini-color: #8b5cf6;
       --bg-start: #0f172a;
       --bg-end: #020617;
       --text: #f8fafc;
@@ -31,16 +32,9 @@
     .dashboard-wrapper { padding: 3rem; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
     .header { display: flex; align-items: center; justify-content: space-between; padding: 2rem 3rem; }
     .logo-area { display: flex; align-items: center; gap: 1.5rem; }
-    .logo-icon { width: 75px; height: 75px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, #10b981, #3b82f6); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); }
-    .header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-icon { width: 75px; height: 75px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--gemini-color), var(--primary-color)); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); }
+    .header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
-    /* INFORMATIVO MOTOR PROCEDURAL */
-    .network-badge { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); padding: 1.2rem 2rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
-    .pulse-dot { width: 14px; height: 14px; background: #3b82f6; border-radius: 50%; box-shadow: 0 0 15px #3b82f6; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-    .network-text h3 { color: #60a5fa; margin-bottom: 0.3rem; }
-    .network-text p { color: #94a3b8; font-size: 0.95rem; line-height: 1.5;}
-
     .grid-layout { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 2.5rem; }
     .panel-section { display: flex; flex-direction: column; gap: 1.2rem; }
     .panel-section h2 { font-size: 1.4rem; color: #cbd5e1; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem; }
@@ -58,18 +52,27 @@
     .active.mat { border-color: var(--primary-color); background: rgba(59,130,246,0.15); color: white; box-shadow: 0 0 25px rgba(59,130,246,0.3); transform: scale(1.02); }
     .active.sci { border-color: var(--science-color); background: rgba(16,185,129,0.15); color: white; box-shadow: 0 0 25px rgba(16,185,129,0.3); transform: scale(1.02); }
     
-    .generate-wrap { margin-top: 3rem; text-align: center; }
+    .generate-wrap { margin-top: 3rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
     .gen-btn { font-size: 1.5rem; padding: 1.5rem 4rem; border-radius: 99px; border: none; font-weight: 800; background: #1e293b; color: #64748b; cursor: not-allowed; transition: all 0.4s; display: inline-flex; align-items: center; gap: 1rem; }
-    .gen-btn.ready { background: linear-gradient(135deg, #10b981, #3b82f6); color: white; cursor: pointer; box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5); }
+    .gen-btn.ready { background: linear-gradient(135deg, var(--gemini-color), var(--primary-color)); color: white; cursor: pointer; box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5); }
     .gen-btn.ready:hover { transform: scale(1.05) translateY(-5px); }
 
-    /* PDF VIEWER ESTILO LIBRO ESTUDIO */
+    .admin-msg-box { max-width: 650px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.4); padding: 1.5rem; border-radius: 12px; color: #fda4af; line-height: 1.5; font-size: 1rem; }
+    
+    /* SPINNER */
+    .loading-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white;}
+    .gemini-spinner { width: 80px; height: 80px; border-radius: 50%; border: 4px solid transparent; border-top-color: var(--gemini-color); border-right-color: var(--primary-color); animation: spin 1s linear infinite; margin-bottom: 2rem; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .load-text { font-size: 1.8rem; font-weight: 800; font-family: 'Outfit'; background: linear-gradient(to right, #c4b5fd, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center;}
+    .load-sub { color: #94a3b8; font-size: 1.1rem; margin-top: 1rem; max-width: 500px; text-align: center;}
+
+    /* VIEWER */
     .viewer { background: #f1f5f9; min-height: 100vh; color: #0f172a; display: flex; flex-direction: column; }
     .toolbar { background: #0f172a; padding: 1.5rem 3rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; color: white; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
     .btn { padding: 0.8rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; transition: 0.2s; }
     .btn-back { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
     .btn-back:hover { background: rgba(255,255,255,0.2); }
-    .btn-print { background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+    .btn-print { background: var(--gemini-color); color: white; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
     .btn-print:hover { transform: translateY(-3px); }
 
     .doc-container { display: flex; flex-direction: column; align-items: center; padding: 3rem 1rem; gap: 3rem; }
@@ -77,8 +80,7 @@
     .page.lec { border-top-color: var(--secondary-color); }
     .page.mat { border-top-color: var(--primary-color); }
     .page.sci { border-top-color: var(--science-color); }
-    
-    .pauta-page { border-top-color: #dc2626 !important; position: relative; }
+    .pauta-page { border-top-color: #dc2626 !important; }
 
     .cover-header { display: flex; justify-content: space-between; border-bottom: 4px solid #cbd5e1; padding-bottom: 1.5rem; margin-bottom: 3rem; }
     .school-sig { display: flex; align-items: center; gap: 1rem; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; color: #1e293b;}
@@ -94,7 +96,7 @@
     .instruct { background: #f8fafc; padding: 2.5rem; border-left: 8px solid #475569; border-radius: 0 12px 12px 0; }
     .instruct h3 { margin-bottom: 1.5rem; font-size: 1.5rem; color: #0f172a; }
     .instruct li { margin-bottom: 1rem; font-size: 1.2rem; line-height: 1.6; color: #334155; }
-    
+    const GEMINI_API_KEY = "AIzaSyBb-HStxrY10b2UJuKEXyzfV3fH-jvfp7o";
     .q-flow { display: flex; flex-direction: column; gap: 4rem; }
     .q-item { page-break-inside: avoid; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2rem; }
     .q-head { display: flex; gap: 1.5rem; font-size: 1.25rem; color: #0f172a; margin-bottom: 1.5rem; }
@@ -145,223 +147,73 @@
   <div id="root"></div>
 
   <script type="text/babel">
+    // =========================================================================
+    // ⚙️ CONFIGURACIÓN MAESTRA DEL ADMINISTRADOR (MODO PADRINO)
+    // 
+    // INSTRUCCIÓN OBLIGATORIA: Para que sus docentes no tengan que colocar una clave
+    // manual y no les tire "Error", obtenga en Google su Llave API (AIstudio.google.com).
+    // Pegue LA LLAVE DE LETRAS LARGAS EXACTAMENTE ENTRE LAS COMILLAS abajo y guarde el doc.
+    // 
+    // Ejemplo: const GEMINI_API_KEY = "AIzaSyXXXXXXXXXX-XXXXXXXXXXXXXXXXXX";
+    // =========================================================================
+    
+    const GEMINI_API_KEY = "AQUI_PEGA_LA_LLAVE_API_DE_GEMINI_STUDIO";
+
+
     const { useState, useEffect } = React;
     const IconShield = () => <span style={{fontSize:'2.5rem'}}>🛡️</span>;
     const IconMetrenco = () => <span style={{fontSize:'2.5rem'}}>🏫</span>;
 
-    // ==========================================
-    // EL MOTOR PROCEDURAL "CEREBRO MAESTRO V6"
-    // ==========================================
+    // AI GEMINI FETCH ENGINE (V7)
+    const generateTestWithAI = async (school, grade, subject) => {
+      // PROMPT MAESTRO DISEÑADO PARA CALIDAD "LIBRO DE EDITORIAL" SIMCE CHILE
+      const prompt = `ERES EL EQUIPO TÉCNICO EXPERTO DEL MINISTERIO DE EDUCACIÓN DE CHILE (MINEDUC / AGENCIA DE CALIDAD).
+Crea un Ensayo Original Oficial para ${grade} y la asignatura de ${subject}.
+Necesitas producir **EXACTAMENTE 35 PREGUNTAS** inéditas en nivel pedagógico superior.
+- Del 1 al 31: Selección múltiple (con 4 alternativas y la correcta).
+- Del 32 al 35: Desarrollo (preguntas abiertas para que justifiquen en líneas escritas).
 
-    const randC = (arr) => arr[Math.floor(Math.random() * arr.length)];
-    const randN = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
+**INSTRUCCIONES CLAVE DE CALIDAD (NO REPETITIVAS):**
+1. ¡CADA pregunta debe ser completamente diferente a la otra en concepto, variables y eje!
+2. Usa contextos hiper-específicos de Chile para los niños (lugares, nombres como Javiera o Alonso, fauna nacional endémica (pudú, cóndor), tradiciones, y la vida real de campamentos o comprar en ferias).
+3. **IMÁGENES (ESTILO EDITORIAL):** Al menos 6 preguntas a lo largo del ensayo NECESITAN un apoyo visual descriptivo (un ecosistema dibujado, fracciones gráficas o niños realizando tareas). 
+   Para hacer esto, debes utilizar el enlace en "imageUrl" con esta regla **obligatoria**:
+   - URL BASE: "https://image.pollinations.ai/prompt/"
+   - PROMPT Inglés unido por guiones bajos.
+   - TEXTO OBLIGATORIO AL FINAL DE LA URL: "_watercolor_sketch_detailed_children_education_book_illustration?width=600&height=350&nologo=true&seed=[AQUI PON UN NUMERO MATEMATICO ALEATORIO DEL 1000 AL 9999]"
+   - EJEMPLO PERFECTO: "https://image.pollinations.ai/prompt/a_chilean_boy_measuring_a_table_with_a_ruler_watercolor_sketch_detailed_children_education_book_illustration?width=600&height=350&nologo=true&seed=4712"
+4. **LECTURAS (SI ES LENGUAJE):** Redacta 2 Textos gigantescos completos (Cuento, Leyenda mapuche o texto informativo) que pondrás en el atributo "textoLectura" al inicio de las preguntas 1 y 16, elaborando preguntas profundas de inferencia debajo de ellos.
 
-    // Sistema de Imágenes Estilo Libro Educativo
-    const getImageURL = (engPrompt) => {
-       const seed = Math.floor(Math.random() * 9999999);
-       const style = "watercolor_sketch_detailed_children_education_book_illustration";
-       return `https://image.pollinations.ai/prompt/${engPrompt}_${style}?seed=${seed}&width=600&height=350&nologo=true`;
-    };
+**ESTRUCTURA JSON EXACTA DE REQUERIDA (NO INCLUYAS MARKDOWN NI \`\`\`json, SOLO EL CORCHETE INICIAL):**
+[
+  { 
+    "id": 1, 
+    "tipo": "seleccion", 
+    "eje": "Tema o Eje MINEDUC", 
+    "textoLectura": "Aquí va un el texto largo de 3 párrafos de la historia (SÓLO pon esto en la primera pregunta donde la lectura sea necesaria, en el resto pon null).",
+    "enunciado": "La leyenda cuenta que...", 
+    "imageUrl": "https://image.pollinations.ai/prompt/...", 
+    "alternativas": ["A) ", "B) ", "C) ", "D) "], 
+    "correcta": "A) ..." 
+  },
+  ... Haz esto hasta llegar a 35! Si es "desarrollo", las alternativas van vacías [].
+]
+Revisa rigurosamente las llaves del JSON para que no falle. Sé brillante en tus redacciones, sorprenderás a la escuela ${school}.`;
 
-    // --- GENERADOR DE MATEMÁTICA ---
-    const generateMathQ = (id, grade) => {
-       const names = ["Martina", "Vicente", "Renata", "Agustín", "Isabella", "Mateo", "Florencia", "Alonso"];
-       const towns = ["Chiloé", "La Serena", "Temuco", "Punta Arenas", "Arica", "Concepción"];
-       
-       let name = randC(names); let town = randC(towns);
-       let itemsList = ["lápices de colores", "manzanas", "cuadernos", "fichas de juego", "dulces", "galletas"];
-       let item = randC(itemsList);
-       
-       let is6to = grade === '6to';
-       
-       // Determinamos si es Múltiple Choice o Desarrollo
-       let isDev = id >= 32;
-
-       // Bancos de Ejes
-       let axes = ['Números y Operaciones', 'Patrones y Álgebra', 'Geometría', 'Medición', 'Datos y Probabilidades'];
-       let axe = isDev ? 'Resolución de Problemas' : randC(axes);
-       
-       let q = { id, tipo: isDev ? 'desarrollo' : 'seleccion', eje: axe, enunciado: "", imageUrl: null, alternativas: [], correcta: "" };
-
-       // Lógica Procedural Profunda
-       if (axe === 'Números y Operaciones' || isDev) {
-           let mult = is6to ? randN(10, 50) : randN(3, 9);
-           let base = is6to ? randN(150, 900) : randN(20, 90);
-           
-           if (!isDev) {
-               q.enunciado = `En la escuela de ${town}, ${name} está organizando ${item}. Si empacó ${mult} cajas y cada caja contiene ${base} ${item}, ¿cuál es el total general empaquetado?`;
-               let ans = mult * base;
-               let alts = [ans, ans+10, ans-mult, ans+base];
-               if(randN(1,4)===1) q.imageUrl = getImageURL(`child_packing_boxes_of_${item}_classroom`);
-               let sAlts = shuffleArray(alts);
-               q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-               q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-           } else {
-               q.enunciado = `${name} afirma que si suma ${base} veces el número ${mult}, es exactamente lo mismo que multiplicar ${base} por ${mult}. ¿Está en lo correcto? Escribe tu justificación y demuestra tu cálculo paso a paso aquí abajo.`;
-               q.correcta = "RÚBRICA: El alumno justifica la propiedad conmutativa / relación suma iterada y multiplicación.";
-           }
-       } else if (axe === 'Geometría') {
-           let figs = ['un triángulo rectángulo', 'un cuadrado', 'un rectángulo', 'un pentágono regular'];
-           let fig = randC(figs);
-           let base = randN(5, 20); let height = randN(5, 20);
-           
-           q.enunciado = `Durante la clase de artes, ${name} dibujó ${fig} en el suelo del patio escolar. Si utilizara una huincha para medir todo el contorno exterior, ¿cómo se le llama matemáticamente a esta medida del borde?`;
-           q.imageUrl = getImageURL(`child_drawing_${fig}_on_playground_floor_chalk`);
-           let ans = "El perímetro"; let errs = ["El área", "El volumen", "El diámetro"];
-           let sAlts = shuffleArray([ans, ...errs]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-
-       } else if (axe === 'Patrones y Álgebra') {
-           let start = randN(2, 10); let diff = randN(3, 8);
-           q.enunciado = `La profesora anotó la siguiente secuencia de números en la pizarra: ${start}, ${start+diff}, ${start + diff*2}, ${start + diff*3}... ¿Qué número ocuparía firmemente el sexto lugar en esta secuencia?`;
-           let ans = start + diff*5;
-           let errs = [start + diff*4, start + diff*6, ans + randN(1,3)];
-           let sAlts = shuffleArray([ans, ...errs]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-
-       } else {
-           // Medición o Datos
-           let varName = randC(["litros de agua", "kilos de arroz", "metros de cuerda"]);
-           let val1 = randN(10, 50); let val2 = randN(60, 100);
-           q.enunciado = `${name} observó el gráfico de barras del colegio. En enero gastaron ${val1} ${varName} y en febrero ${val2} ${varName}. ¿Cuánta fue la diferencia exacta entre ambos meses?`;
-           if(randN(1,3)===1) q.imageUrl = getImageURL(`colorful_bar_chart_on_blackboard_classroom`);
-           let ans = Math.abs(val2 - val1);
-           let errs = [val2 + val1, ans + 10, val2];
-           let sAlts = shuffleArray([ans, ...errs]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-       }
-       return q;
-    };
-
-
-    // --- GENERADOR DE CIENCIAS ---
-    const generateScienceQ = (id) => {
-       const isDev = id >= 32;
-       const eje = isDev ? 'Investigación Científica' : randC(['Ciencias de la Vida', 'Ciencias Físicas', 'Ciencias de la Tierra']);
-       let q = { id, tipo: isDev ? 'desarrollo' : 'seleccion', eje, enunciado: "", imageUrl: null, alternativas: [], correcta: "" };
-       
-       if (isDev) {
-           q.enunciado = `Imagina que eres un científico en el sur de Chile estudiando por qué se evaporan rápido los lagos en verano. Cita 2 variables (factores) climáticos que medirías en tu investigación y explica por qué son importantes.`;
-           q.correcta = "RÚBRICA: Nombrar temperatura y viento/sol, y explicar radiación térmica/evaporación.";
-           return q;
-       }
-
-       if (eje === 'Ciencias de la Vida') {
-           q.enunciado = `En los ecosistemas chilenos existen productores y consumidores. Si observamos un bosque, ¿qué organismo es considerado un "productor" capaz de fabricar su propio alimento mediante fotosíntesis?`;
-           q.imageUrl = getImageURL(`chilean_forest_araucaria_trees_sunlight`);
-           let ans = "El árbol de Araucaria."; let errs = ["El zorro culpeo.", "El cóndor.", "Los hongos descomponedores."];
-           let sAlts = shuffleArray([ans, ...errs]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-       } else if (eje === 'Ciencias Físicas') {
-           q.enunciado = `Si dejas una barra de chocolate al sol durante una calurosa tarde de verano, ésta pasará de estado sólido a líquido. ¿Cómo se conoce científicamente este cambio de estado de la materia?`;
-           let ans = "Fusión."; let errs = ["Evaporación.", "Condensación.", "Solidificación."];
-           let sAlts = shuffleArray([ans, ...errs]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-       } else {
-           let planet = randC(["Marte", "La Tierra", "Júpiter"]);
-           q.enunciado = `En nuestro Sistema Solar, los planetas giran alrededor del sol. ¿Qué nombre recibe la fuerza invisible que impide que ${planet} salga flotando hacia el espacio exterior y lo mantiene en órbita constante?`;
-           if (randN(1,3)===1) q.imageUrl = getImageURL(`solar_system_planets_orbiting_sun_space`);
-           let ans = "La fuerza de gravedad."; let errs = ["La fuerza magnética.", "La presión atmosférica.", "La energía eólica."];
-           let sAlts = shuffleArray([ans, ...errs]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-       }
-       return q;
-    };
-
-
-    // --- GENERADOR DE LECTURA ---
-    // Textos Gigantes
-    const textsBank = [
-       { title: "El Zorro Culpeo y la Montaña de Cristal",
-         txt: `Hace miles de años, en la cordillera de los Andes centrales de Chile, vivía un intrépido zorro culpeo color fuego llamado Rufino. Rufino era conocido entre los pumas y las vizcachas por ser increíblemente curioso, siempre husmeando detrás de las grandes rocas nevadas.\n\nUna mañana de intenso frío, Rufino descubrió una caverna oculta que jamás había visto antes. En su interior, en lugar de piedra, las paredes brillaban como espejos infinitos: era una montaña hecha puramente de cristal de cuarzo transparente. Fascinado, el zorro avanzó, dándose cuenta de que cada vez que hablaba, la caverna no repetía su eco, sino que proyectaba imágenes luminosas de sus pensamientos.\n\nPronto descubrió que el cristal tenía un poder mágico: mostraba la verdad oculta en el corazón de quien lo miraba. Rufino vio en las paredes que, pese a ser cazador, su deseo más profundo era ser protector del valle. Aquel día, el zorrito cambió su destino.`,
-         img: `chilean_zorro_culpeo_fox_looking_at_crystal_cave_glowing`,
-         qObj: [
-            { enun: "Según el texto, ¿qué característica psicológica resaltaba en la personalidad de Rufino?", ans: "Su tremenda curiosidad.", errs: ["Su enorme tamaño.", "Su enojo constante.", "Su ceguera total."] },
-            { enun: "A diferencia de las cavernas normales, ¿qué hacía la Montaña de Cristal cuando alguien hablaba en ella?", ans: "Proyectaba imágenes de los pensamientos.", errs: ["Repetía un eco muy fuerte.", "Se derrumbaba en pedazos.", "Congelaba el sonido al instante."] },
-            { enun: "¿Qué descubrió Rufino sobre su corazón al mirar los cristales mágicos?", ans: "Que su deseo profundo era ser protector del valle.", errs: ["Que deseaba convertirse en un puma gigante.", "Que tenía mucho miedo a la nieve.", "Que no le gustaba vivir en los Andes."] },
-            { enun: "Basándose en el relato, ¿cuál de los siguientes animales habitaba también en la misma cordillera que Rufino?", ans: "Vizcachas.", errs: ["Elefantes.", "Osos polares.", "Cocodrilos."] }
-         ]
-       },
-       { title: "El Copihue: La Flor de la Pasión y las Lágrimas",
-         txt: `El Copihue es la flor nacional de Chile. Sus pétalos rojos en forma de campana cuelgan majestuosos en los bosques húmedos de la zona centro y sur del país, trepando silenciosamente por los robustos troncos de los árboles nativos como el roble y el coigüe.\n\nLa leyenda mapuche afirma que hace mucho tiempo, una joven princesa llamada Huelle pasaba sus días llorando por un amor imposible proveniente de una tribu rival, llamado Copih. Ante la guerra de sus pueblos, ambos perdieron la vida trágicamente en el fragor de la batalla. Se cuenta que las enredaderas recolectaron las lágrimas rojas derramadas en la tierra del bosque, floreciendo un año después en forma de campanillas escarlata.\n\nHoy en día, encontrar un copihue en el bosque nativo es un símbolo de pureza y respeto. Por ley, es una especie protegida, lo que significa que arrancar sus hermosas flores rojas o blancas está terminantemente prohibido para asegurar que la leyenda sobreviva en nuestras tierras del sur.`,
-         img: `copihue_red_flower_chile_forest_bell_shape_nature_vines`,
-         qObj: [
-            { enun: "En términos biológicos descritos en el texto, ¿cómo se desarrolla la planta del copihue?", ans: "Trepando como enredadera por los troncos altos.", errs: ["Flotando sobre los lagos cristalinos.", "Creciendo bajo tierra como una zanahoria.", "Volando sus semillas con los fuertes vientos."] },
-            { enun: "¿A qué se asocia mágicamente el nacimiento de esta flor según la antigua leyenda de los pueblos?", ans: "A las lágrimas derramadas por un amor imposible.", errs: ["Al regalo de unos dioses de las montañas.", "A la magia de los zorros culpeos del bosque.", "A un meteorito rojo que cayó del cielo."] },
-            { enun: "En la actualidad, ¿cuál es la medida legal protectora que el texto menciona sobre el copihue?", ans: "Está terminantemente prohibido cortarlo.", errs: ["Debes regarlo tres veces al día obligatoriamente.", "Se usa libremente para adornar plazas.", "Solo se puede cultivar en el desierto."] },
-            { enun: "¿De qué ecosistema chileno es emblemática esta flor según los dos primeros párrafos?", ans: "De los bosques húmedos de la zona centro y sur.", errs: ["Del desierto seco de Atacama.", "De los fiordos antárticos congelados.", "De las playas soleadas del norte del país."] }
-         ]
-       }
-    ];
-
-    const generateReadingQ = (id, baseTexts) => {
-        let isDev = id >= 32;
-        let q = { id, tipo: isDev ? 'desarrollo' : 'seleccion', eje: 'Comprensión Lectora', textoLectura: null, enunciado: "", imageUrl: null, alternativas: [], correcta: "" };
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.9, maxOutputTokens: 8192 }
+          })
+      });
         
-        if (isDev) {
-            q.eje = "Reflexión del Texto";
-            q.enunciado = `En los cuentos y leyendas siempre existe un "mensaje o enseñanza". Selecciona la historia que más te gustó de la prueba, ¿cuál crees que es el mayor mensaje valórico que quiere entregar el autor al mundo? Justifica en tres líneas usando ejemplos.`;
-            q.correcta = "RÚBRICA: El estudiante debe formular juicios valorativos y argumentar en base a pasajes del texto escogido.";
-            return q;
-        }
-
-        // Selecciono a qué texto pertenece ( Texto 1 [1-15], Texto 2 [16-31])
-        let textIndex = id <= 15 ? 0 : 1;
-        let textObj = baseTexts[textIndex];
-
-        if (id === 1 || id === 16) {
-           q.textoLectura = textObj.txt;
-           q.enunciado = `Lee atentamente el texto: "${textObj.title}".`;
-           q.imageUrl = getImageURL(textObj.img);
-           // Pregunta filler de arranque
-           let ans="Comprender los detalles e historias de la lectura central.";
-           let sAlts = shuffleArray([ans, "Saltarme el texto para terminar rápido.", "Revisar los errores de imprenta.", "Mirar solo el título rojo."]);
-           q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-           q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-           return q;
-        }
-
-        // Sacar de la BD manual
-        let manualQ = textObj.qObj.pop();
-        if (manualQ) {
-            q.enunciado = manualQ.enun;
-            let sAlts = shuffleArray([manualQ.ans, ...manualQ.errs]);
-            q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-            q.correcta = `${['A','B','C','D'][sAlts.indexOf(manualQ.ans)]}) ${manualQ.ans}`;
-        } else {
-            // Generador dinámico de comprensión
-            let verb = randC(["¿Qué sugiere el autor sobre", "¿Cuál es el propósito principal al mencionar", "¿Qué emoción predomina al describir"]);
-            q.enunciado = `${verb} la temática presente a la mitad de la historia?`;
-            let ans = "Profundizar en la experiencia directa de los personajes del relato.";
-            let errs = ["Hacer que el texto se vuelva aburrido.", "Cambiar repentinamente el tema final.", "Describir el proceso matemático del autor."];
-            let sAlts = shuffleArray([ans, ...errs]);
-            q.alternativas = sAlts.map((v,i) => `${['A','B','C','D'][i]}) ${v}`);
-            q.correcta = `${['A','B','C','D'][sAlts.indexOf(ans)]}) ${ans}`;
-        }
-        return q;
-    };
-
-
-    // GENERADOR MAESTRO FINAL (1 SEGUNDO INSTANTÁNEO)
-    const generateMasterTest = (grade, subject) => {
-        let test = [];
-        // Clonar textos para Lectura
-        let tBank = JSON.parse(JSON.stringify(textsBank)); 
-        tBank = shuffleArray(tBank);
-
-        for(let i=1; i<=35; i++) {
-           if(subject === 'matematica') test.push(generateMathQ(i, grade));
-           else if(subject === 'ciencias') test.push(generateScienceQ(i));
-           else test.push(generateReadingQ(i, tBank));
-        }
-        return test;
+      if (!response.ok) throw new Error("Llave Invalida o Error API");
+      const jsonRes = await response.json();
+      let rawText = jsonRes.candidates[0].content.parts[0].text;
+      rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      return JSON.parse(rawText);
     };
 
 
@@ -373,37 +225,52 @@
       const [config, setConfig] = useState({});
       const [testData, setTestData] = useState([]);
       const [loading, setLoading] = useState(false);
+      const [loadMsg, setLoadMsg] = useState("");
 
-      const handleGenerate = (school, grade, subject) => {
-        setLoading(true);
-        // Retraso estético de 1.5s para que al usuario sienta que el sistema armó la base de datos inmensa
-        setTimeout(() => {
-           const finalTest = generateMasterTest(grade, subject);
-           setConfig({ school, grade, subject });
-           setTestData(finalTest);
-           setLoading(false);
-           setView('view');
-        }, 1200);
+      const handleGenerate = async (school, grade, subject) => {
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === "AQUI_PEGA_LA_LLAVE_API_DE_GEMINI_STUDIO") {
+           alert("⚠️ ATENCIÓN DIRECTOR(A) DEL SISTEMA:\n\nEl sistema intentó usar el Motor Gemini pero no ha detectado la Llave API Oculta en el código.\n\nPor favor, abra este archivo HTML (VISUALIZAR_PLATAFORMA_SIMCE.html) en el 'Bloc de Notas' o 'NotePad++', encuentre la línea 99 donde dice 'AQUI_PEGA_LA_LLAVE_API...' y reemplácela por la llave real que Google le regala.");
+           return;
+        }
+
+        try {
+          setLoading(true);
+          setLoadMsg("Iniciando Transmisión Neuronal con Gemini 1.5...");
+          
+          setTimeout(() => setLoadMsg(`El equipo IA analizando el plan curricular para ${grade}...`), 2000);
+          setTimeout(() => setLoadMsg(`Redactando de modo profesional 35 interrogantes lógicas... (Esto tomará 15-20 segundos)`), 8000);
+
+          const data = await generateTestWithAI(school, grade, subject);
+          
+          setConfig({ school, grade, subject });
+          setTestData(data);
+          setView('view');
+          
+        } catch (error) {
+          alert("💥 Error Técnico en el Motor: " + error.message + ".\n\nVerifique que pegó la API KEY correctamente en el texto y que el sitio sí tenga conexión de red.");
+        } finally {
+          setLoading(false);
+        }
       };
 
       return (
         <div>
           {loading && (
-             <div style={{position:'fixed', inset:0, background:'rgba(2, 6, 23, 0.95)', zIndex:999, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', color:'white'}}>
-                <div className="pulse-dot" style={{width:'50px', height:'50px', marginBottom:'2rem'}}></div>
-                <h1 style={{fontFamily:'Outfit', fontSize:'2rem', color:'#60a5fa'}}>El Motor Procedural está ensamblando...</h1>
-                <p style={{color:'#94a3b8', fontSize:'1.2rem', marginTop:'1rem'}}>Creando 35 preguntas ilimitadas con imágenes pintadas en 1 segundo.</p>
+             <div className="loading-overlay">
+                <div className="gemini-spinner"></div>
+                <div className="load-text">{loadMsg}</div>
+                <div className="load-sub">La Inteligencia Artificial está operando sin contraseñas públicas con el 'Modelo Oculto del Docente'. Solo espere un momento que el cuadernillo maestro terminará de escribirse gratis de la nada.</div>
              </div>
           )}
           {view === 'dash' 
-            ? <Dashboard onGen={handleGenerate} /> 
+            ? <Dashboard onGen={handleGenerate} isKeySet={GEMINI_API_KEY && GEMINI_API_KEY !== "AQUI_PEGA_LA_LLAVE_API_DE_GEMINI_STUDIO"} /> 
             : <PdfViewer cfg={config} test={testData} onBack={() => setView('dash')} />
           }
         </div>
       );
     };
 
-    const Dashboard = ({ onGen }) => {
+    const Dashboard = ({ onGen, isKeySet }) => {
       const [sc, setSc] = useState('');
       const [gr, setGr] = useState('');
       const [su, setSu] = useState('');
@@ -412,19 +279,23 @@
       return (
         <div className="dashboard-wrapper">
           <div className="header glass-panel">
-            <div className="logo-area"><div className="logo-icon"><h2>PR</h2></div> 
-            <div><h1>SIMCE Master V6</h1><p style={{color:'#cbd5e1', fontSize:'1.1rem'}}>Generador Procedural Nivel Libro Mineduc</p></div></div>
+            <div className="logo-area"><div className="logo-icon"><h2>AI</h2></div> 
+            <div><h1>SIMCE ENGINE: Gemini V7</h1><p style={{color:'#cbd5e1', fontSize:'1.1rem'}}>Plataforma Integrada Oculta (Nivel Editorial Mineduc)</p></div></div>
           </div>
           
-          <div className="network-badge">
-             <div className="pulse-dot"></div>
-             <div className="network-text">
-                <h3>Base de Datos Ultra-Garantizada Activa</h3>
-                <p>Bienvenido al Motor Definitivo. Usando matemáticas e historias chilenas complejas, este código forja un SIMCE 100% veloz y natural y pinta imágenes únicas estilo acuarela para niños, sin pedir internet a Inteligencias Artificiales externas de mala calidad. Carga en 1 segundo.</p>
-             </div>
-          </div>
+          {!isKeySet ? (
+            <div className="admin-msg-box glass-panel" style={{margin:'0 auto', textAlign:'center'}}>
+               <h3>⚠️ ACCIÓN DE CONFIGURACIÓN REQUERIDA EN EL CÓDIGO ⚠️</h3>
+               <p style={{marginTop:'0.5rem'}}>Este software está listo, pero tú **aún no pegas la clave de Google** en el interior secreto del archivo (Línea 99 de tu código). Para obtener tu clave gratis, entra a <a href="https://aistudio.google.com/app/apikey" target="_blank" style={{color:'#fca5a5'}}>aistudio.google.com</a>, cópiala, ponla en el código código fuente, y sube el archivo devuelta a tu GitHub para que tus docentes puedan utilizar esto infinitamente.</p>
+            </div>
+          ) : (
+            <div className="admin-msg-box glass-panel" style={{margin:'0 auto', textAlign:'center', background:'rgba(16, 185, 129, 0.1)', borderColor:'rgba(16, 185, 129, 0.4)', color:'#34d399'}}>
+               <h3>✅ CONEXIÓN GEMINI SECRETA ESTABLECIDA</h3>
+               <p style={{marginTop:'0.5rem', color:'#94a3b8'}}>El Motor de IA ya reconoció la llave integrada en tu código fuente. Todos los docentes en este computador o vínculo podrán producir Ensayos sin poner contraseñas logrando calidad literaria real.</p>
+            </div>
+          )}
 
-          <div className="grid-layout">
+          <div className="grid-layout" style={{marginTop: !isKeySet? 0 : '1rem'}}>
             <div className="panel-section">
               <h2>🏢 1. Seleccionar Institución</h2>
               <div className={`btn-card glass-panel ${sc==='Escuela Truf-Truf'?'active truf':''}`} onClick={()=>setSc('Escuela Truf-Truf')}>🛡️ Escuela Truf-Truf</div>
@@ -438,7 +309,7 @@
             </div>
 
             <div className="panel-section">
-              <h2>📚 3. Compilar Materia Procedural</h2>
+              <h2>📚 3. Compilar IA Nativa</h2>
               <div style={{display:'grid', gap:'1.2rem', gridTemplateColumns:'1fr 1fr', height:'100%'}}>
                 <div className={`btn-card subj-card ${gr?'ena':''} ${su==='lectura'?'active lec':''}`} onClick={()=>gr&&setSu('lectura')}>📖 Lectura</div>
                 <div className={`btn-card subj-card ${gr?'ena':''} ${su==='matematica'?'active mat':''}`} onClick={()=>gr&&setSu('matematica')}>🧮 Matemática</div>
@@ -449,7 +320,7 @@
 
           <div className="generate-wrap">
             <button className={`gen-btn ${ready?'ready':''}`} onClick={() => ready && onGen(sc, gr, su)}>
-               🚀 Configurar e Inyectar Cuadernillo SIMCE Instantáneo
+               ✨ Redactar Nuevo Cuadernillo con Gemini 
             </button>
           </div>
         </div>
@@ -467,7 +338,7 @@
         <div className="viewer" id="pdf-start">
           <div className="toolbar no-print">
              <button className="btn btn-back" onClick={onBack}>← Crear Otra Prueba</button>
-             <span style={{fontSize:'1.2rem', fontWeight:'bold'}}>✅ {cfg.school} | Generación Nivel Libro Escolar Completa</span>
+             <span style={{fontSize:'1.2rem', fontWeight:'bold'}}>✅ {cfg.school} | Pincel Acuarela y Redacción Completada</span>
              <button className="btn btn-print" onClick={()=>window.print()}>🖨️ Desplegar e Imprimir Todo en A4</button>
           </div>
 
@@ -476,7 +347,7 @@
             <div className={`page ${cClass}`}>
               <div className="cover-header">
                 <div className="school-sig">{cfg.school === 'Escuela Truf-Truf' ? <IconShield/> : <IconMetrenco/>} {cfg.school}</div>
-                <div style={{textAlign:'right', color:'#64748b'}}><b>Agencia Nacional de Calidad</b><br/>Validación 2026</div>
+                <div style={{textAlign:'right', color:'#64748b'}}><b>Agencia Nacional de Gemini AI</b><br/>Validación Oficial</div>
               </div>
               
               <div className="title-area">
@@ -495,7 +366,7 @@
               <div className="instruct">
                 <h3>INSTRUCCIONES DE DESARROLLO</h3>
                 <ul>
-                  <li>Cuadernillo personalizado e ilustrado con <strong>{test.length} preguntas</strong> ({mcqs.length} múltiples y 4 desarrollo).</li>
+                  <li>Cuadernillo personalizado e ilustrado con IA, contiene <strong>{test.length} preguntas</strong> ({mcqs.length} múltiples y 4 desarrollo).</li>
                   <li>Las alternativas llénalas cuidadosamente al final en tu <strong>Lector Óptico</strong>, sin marcar X.</li>
                   <li>Las preguntas en espacio blanco (abiertas) redáctalas de forma clara y extensa.</li>
                   <li>Tienes 90 minutos para dar lo mejor de ti. Mantén silencio y revisa al terminar.</li>
@@ -513,7 +384,7 @@
                    return (
                      <div key={q.id} className="q-item">
                         {q.textoLectura && (
-                          <div className="reading-box">
+                          <div className="reading-box" style={{breakInside:'auto'}}>
                              <div className="r-title">LECTURA PRINCIPAL</div>
                              <div className="r-txt">{q.textoLectura}</div>
                           </div>
@@ -526,19 +397,21 @@
                         
                         {q.imageUrl && (
                           <div className="q-img">
-                             {/* Imagen estilo Libro Mineduc Inyectada */}
                              <img src={q.imageUrl} alt="Ilustración Mineduc" crossOrigin="anonymous" />
                           </div>
                         )}
 
                         {q.tipo === 'seleccion' ? (
                           <div className="alts">
-                            {q.alternativas && q.alternativas.map((alt, i) => (
+                            {q.alternativas && q.alternativas.map((alt, i) => {
+                              let safeAlt = alt.length > 3 ? alt : `${['A','B','C','D'][i]}) ${alt}`;
+                              return (
                                 <div key={i} className="alt-row">
-                                   <span className="alt-let">{alt.substring(0,2)}</span>
-                                   {alt.substring(3)}
+                                   <span className="alt-let">{safeAlt.substring(0,2)}</span>
+                                   {safeAlt.substring(3)}
                                 </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         ) : (
                           <div className="dev-box">
@@ -587,7 +460,7 @@
             <div className="page pauta-page">
                <div className="pauta-docente-header">
                  DOCUMENTO EXCLUSIVO DOCENTE<br/>
-                 <span style={{fontSize:'1.5rem', fontWeight:'600', color:'#fca5a5'}}>SOLUCIONARIO V6 PROCEDURAL</span>
+                 <span style={{fontSize:'1.5rem', fontWeight:'600', color:'#fca5a5'}}>SOLUCIONARIO V7 GEMINI AI</span>
                </div>
                
                <table className="pauta-table">
