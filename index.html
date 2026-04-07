@@ -150,80 +150,103 @@
     const IconMetrenco = () => <span style={{fontSize:'2.5rem'}}>🏫</span>;
 
     // ==========================================
-    // MOTOR IA LIBRE CHUNKED (ANTI-TRUNCATION)
+    // MOTOR IA LIBRE CHUNKED (SECUENCIAL BLINDADO)
     // ==========================================
-    const fetchChunk = async (grade, subject, startId, endId, isDev, reqText) => {
+    const fetchChunk = async (grade, subject, startId, endId, isDev, reqText, maxRetries = 3) => {
       let formatInst = isDev 
-        ? `- Del ${startId} al 31: Selección múltiple. Del 32 al ${endId}: Desarrollo (sin alternativas, déjalo en un array vacío []).`
-        : `- TODAS son de Selección múltiple (propiedad 'alternativas' obligatoria con 4 opciones A, B, C, D).`;
+        ? `- Del ${startId} al 31: Selección múltiple. Del 32 al ${endId}: Desarrollo (sin alternativas, usar array vacío []).`
+        : `- TODAS son Selección múltiple obligatoria (propiedad 'alternativas' con 4 opciones A, B, C, D).`;
       
       let textInst = reqText 
-        ? `En la pregunta ID ${startId}, crea una LECTURA INTERESANTE Y LARGA (Mito chileno, artículo real) en la propiedad 'textoLectura'. Las siguientes preguntas básalas en el texto.`
-        : `Deja 'textoLectura' como null en todas las preguntas de este bloque.`;
+        ? `En la pregunta ID ${startId}, crea una LECTURA INTERESANTE Y EXTENSA (Ej. Leyenda chilena) en la propiedad 'textoLectura' usando \n para párrafos. Las siguientes preguntas básalas en ella.`
+        : `La propiedad 'textoLectura' debe ir siempre como null.`;
 
       const prompt = `ERES EL MINISTERIO DE EDUCACIÓN CHILENO.
-Genera un ARRAY JSON con EXACTAMENTE ${endId - startId + 1} objetos de preguntas para ${subject} de ${grade} Básico.
-Los IDs exactos deben ir del ${startId} al ${endId}.
+Imprime UN ARRAY JSON ESTRICTO con EXACTAMENTE ${endId - startId + 1} objetos de preguntas para ${subject} de ${grade} Básico.
+Los IDs exactos deben ir del ${startId} al ${endId} correlativamente.
 
-REGLAS DE FORMATO RIGUROSAS:
-- id: (número asignado en orden)
+REGLAS DE FORMATO:
+- id: (número del ${startId} al ${endId})
 - tipo: "seleccion" o "desarrollo"
-- eje: (string del tema)
+- eje: (string corto)
 - textoLectura: (string o null)
 - enunciado: (string)
-- imageUrl: (Debe ir una URL estricta O null. CREA AL MENOS 2 PREGUNTAS con esta URL: "https://image.pollinations.ai/prompt/{descripcion_ingles_unida_con_guion_bajo}?width=600&height=350&nologo=true")
-- alternativas: (Array de 4 strings o [])
-- correcta: (string de la respuesta correcta o rúbrica de corrección para el docente si es desarrollo)
+- imageUrl: (URL estricta O null. AL MENOS 2 preguntas OBLIGATORIAMENTE deben llevar la siguiente URL: "https://image.pollinations.ai/prompt/un_dibujo_educativo_estilo_acuarela_de_{concepto_en_ingles}?width=600&height=350&nologo=true")
+- alternativas: (Array de 4 strings iniciados en A) B) C) D) o [] vacío)
+- correcta: (string de la respuesta correcta)
 
 ${formatInst}
 ${textInst}
-Usa ciudades chilenas y personajes locales. NUNCA insertes texto Markdown (como \`\`\`json). SOLO EL ARREGLO PLANO COMENZANDO CON [ Y TERMINANDO CON ].`;
+Usa geografía chilena y nombres típicos. NUNCA escribas \`\`\`json. SÓLO EL ARREGLO DE CORCHETES [ A ].`;
 
-      const response = await fetch("https://text.pollinations.ai/openai", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: [
-              { role: "system", content: "Returns ONLY valid JSON. No intro, no outro, NO MARKDOWN." },
-              { role: "user", content: prompt }
-            ],
-            model: "openai",
-            jsonMode: true
-          })
-      });
-      
-      if (!response.ok) throw new Error("Fallo de conexión OpenAI Proxy");
-      
-      const rawRes = await response.json();
-      let rawText = rawRes.choices ? rawRes.choices[0].message.content : rawRes;
-      
-      // Limpiamos estrictamente el string para forzar JSON válido
-      let cutStart = rawText.indexOf('[');
-      let cutEnd = rawText.lastIndexOf(']');
-      if (cutStart !== -1 && cutEnd !== -1) {
-          rawText = rawText.substring(cutStart, cutEnd + 1);
-      }
-      
-      try {
-         return JSON.parse(rawText);
-      } catch(e) {
-         throw new Error("Truncamiento detectado en el Chunk. El texto no cerró los corchetes correctamente.");
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+         try {
+            const response = await fetch("https://text.pollinations.ai/openai", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  messages: [
+                    { role: "system", content: "Returns ONLY valid JSON Arrays. No intro, no markdown." },
+                    { role: "user", content: prompt }
+                  ],
+                  model: "openai",
+                  jsonMode: true
+                })
+            });
+            
+            if (!response.ok) {
+               throw new Error("HTTP Error " + response.status);
+            }
+            
+            const rawTextRcv = await response.text();
+            let rawText = "";
+
+            try {
+                // Intentamos parsear si Pollinations respondió un envoltorio OpenAI
+                const jsonWrap = JSON.parse(rawTextRcv);
+                rawText = jsonWrap.choices ? jsonWrap.choices[0].message.content : (jsonWrap.message?.content || rawTextRcv);
+                if (typeof rawText !== 'string') rawText = JSON.stringify(rawText);
+            } catch (je) {
+                // O quizás respondió el texto plano directo
+                rawText = rawTextRcv;
+            }
+            
+            // Limpia estricta de Markdown y basura
+            let cutStart = rawText.indexOf('[');
+            let cutEnd = rawText.lastIndexOf(']');
+            if (cutStart !== -1 && cutEnd !== -1) {
+                rawText = rawText.substring(cutStart, cutEnd + 1);
+            } else {
+                throw new Error("Falta estructura de array []");
+            }
+            
+            const parsedArray = JSON.parse(rawText);
+            if (!Array.isArray(parsedArray)) throw new Error("No es un array.");
+            
+            return parsedArray;
+
+         } catch(e) {
+            console.error("Intento " + attempt + " fallido para " + startId + "-" + endId + ":", e);
+            if (attempt === maxRetries) {
+               throw new Error("Colapso tras 3 intentos en seccion " + startId + "-" + endId + ". Detalle: " + e.message);
+            }
+            // Esperar paciente 3 segundos antes de reintentar (evita Rate Limit)
+            await new Promise(r => setTimeout(r, 3000));
+         }
       }
     };
 
     const generateTestWithAI = async (school, grade, subject) => {
-        // Al dividir la carga en 3 hilos paralelos, sorteamos los Límites de Tokens de OpenAI
-        // Evitando al 100% que el JSON se corte a la mitad, y triplicando la velocidad de creación.
-        const p1 = fetchChunk(grade, subject, 1, 12, false, subject === 'lectura');
-        const p2 = fetchChunk(grade, subject, 13, 24, false, subject === 'lectura');
-        const p3 = fetchChunk(grade, subject, 25, 35, true, false);
-
-        const chunks = await Promise.all([p1, p2, p3]);
+        // Ejecución estrictamente secuencial para NO inundar el proxy y gatillar el 429
+        const masterTest = [];
         
-        let masterTest = [];
-        chunks.forEach(ch => { masterTest = masterTest.concat(ch); });
+        const ch1 = await fetchChunk(grade, subject, 1, 12, false, subject === 'lectura');
+        const ch2 = await fetchChunk(grade, subject, 13, 24, false, subject === 'lectura');
+        const ch3 = await fetchChunk(grade, subject, 25, 35, true, false);
         
-        // Re-mapear IDs forzosamente asegurando la secuencia perfecta 1-35.
+        masterTest.push(...ch1, ...ch2, ...ch3);
+        
+        // Re-mapear IDs forzosamente asegurando la secuencia perfecta
         masterTest.forEach((item, index) => { item.id = index + 1; });
         return masterTest;
     };
